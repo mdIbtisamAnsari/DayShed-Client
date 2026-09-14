@@ -11,6 +11,7 @@ export default function RootLayout() {
   
   return (
     <View className="flex-1 bg-slate-800">
+      <StatusBar hidden={true} />
       <LoadingProvider>
         <Slot />
       </LoadingProvider>

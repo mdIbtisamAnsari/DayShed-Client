@@ -124,12 +124,12 @@ export default function signin() {
             className="self-end"
             onPress={() => router.push("/(auth)/forgotPassword")}
           >
-            <Text className="text-blue-500 font-medium mb-10">
+            <Text className="text-blue-500 font-medium mb-1">
               Forgot Password?
             </Text>
           </Pressable>
           <Pressable
-            className="bg-blue-500 rounded-full py-2"
+            className="bg-blue-500 rounded-full py-2 mt-8"
             onPress={handleSignIn}
           >
             <Text className="text-gray-100 text-2xl text-center font-semibold">

@@ -1,56 +1,91 @@
-# Welcome to your Expo app 👋
+# 📅 DayShed (Day Scheduler)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**DayShed** is a modern, cross-platform mobile application designed to streamline daily scheduling, task ingestion, and productivity analytics. Built with **React Native (Expo)**, **TypeScript**, and **NativeWind**, DayShed provides a fast, intuitive, and responsive experience for managing everyday schedules on both Android and iOS devices.
 
-## Get started
+---
 
-1. Install dependencies
+## 🛠️ Tech Stack & Architecture
 
-   ```bash
-   npm install
-   ```
+- **Framework**: [React Native](https://reactnative.dev/) with [Expo](https://expo.dev/) (Prebuilt / Custom Native Support)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Routing & Navigation**: [Expo Router](https://docs.expo.dev/router/introduction/) (File-based navigation with nested route groups)
+- **Styling**: [NativeWind](https://www.nativewind.dev/) / Tailwind CSS
+- **Networking**: Axios (Centralized API client with request interceptors)
+- **State Management**: React Context (`LoadingContext`, `arkProvider`) & Custom Hooks (`useAuth`)
+- **Native Platforms**: Android (Kotlin) & iOS (Swift) integration
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## ✨ Key Features
 
-In the output, you'll find options to open the app in a
+- **🔐 Authentication Flow**:
+  - Sign-in & Sign-up workflows
+  - OTP verification (`otp.tsx`)
+  - Password recovery support (`forgotPassword.tsx`)
+- **📱 Daily Dashboard & Tabs**:
+  - **Home**: Dynamic daily scheduling dashboard
+  - **Inbox**: Communication and task ingestion hub
+  - **Insights**: Productivity analytics and schedule breakdowns
+- **💳 Monitization / Subscriptions**: Built-in subscription routing (`subscribe.tsx`)
+- **🛡️ Secure Route Guarding**: Dynamic navigation flow segregating unauthenticated `(auth)` routes from protected `(root)` features.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 📂 Directory Structure
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```text
+DayShed/
+├── android/                 # Native Android project configuration (Kotlin)
+├── ios/                     # Native iOS project configuration (Swift / Xcode)
+├── assets/                  # App icons, splash screens, and image assets
+├── src/
+│   ├── api/                 # Axios HTTP client & network configurations
+│   ├── app/                 # Expo Router file-based pages & layouts
+│   │   ├── (auth)/          # Authentication routes (Sign-In, Sign-Up, OTP)
+│   │   ├── (root)/          # Main application context
+│   │   │   ├── (subscription)/ # Monetization and plan management
+│   │   │   └── (tabs)/      # Bottom tab navigation (Home, Inbox, Insights)
+│   │   └── _layout.tsx      # Root application layout
+│   ├── context/             # Global React Context providers
+│   ├── helper/              # Utility functions and custom providers
+│   ├── hooks/                # Custom React Hooks (e.g., useAuth)
+│   └── services/            # API service calls (authApi, localApi)
+├── app.json                 # Expo project configuration
+├── eas.json                 # Expo Application Services build configuration
+├── tailwind.config.js       # NativeWind / Tailwind styling config
+└── tsconfig.json            # TypeScript configuration
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-### Other setup steps
+## 🚀 Development Timeline & Engineering Journal
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Development was executed in focused sprints, balancing continuous offline prototyping and active code implementation with an approximate **4–5 day weekly sprint cadence** (with 2–3 days dedicated to planning, testing, and rest per week).
 
-## Learn more
+### 📍 Milestone 1: Foundation & Styling Pipeline
+**Period:** Late August 2026
+- Initialized the React Native project with Expo and TypeScript enforcement.
+- Integrated NativeWind and configured Tailwind CSS (`tailwind.config.js`, `global.css`) for utility-first mobile styling.
+- Defined core application configuration (`app.json`, `eas.json`, `metro.config.js`).
 
-To learn more about developing your project with Expo, look at the following resources:
+### 📍 Milestone 2: Native Module Setup & Prebuilding
+**Period:** Early September 2026
+- Executed Expo prebuild step to expose native `/android` and `/ios` directories.
+- Configured native Android settings (`MainActivity.kt`, `MainApplication.kt`) and iOS entry points (`AppDelegate.swift`).
+- Integrated custom branding assets (launch icons, splash screens, Android keystore `debug.keystore`).
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 📍 Milestone 3: Routing Architecture & Auth Services
+**Period:** Mid-September 2026
+- Established file-based navigation routing structure via `expo-router`.
+- Designed user onboarding experience under the `(auth)` route group (`signin`, `signup`, `otp`, `forgotPassword`).
+- Developed `authApi` service layer and created custom `useAuth` hook for managing user tokens and session persistence.
+- Added global state handlers (`LoadingContext` and `arkProvider`).
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### 📍 Milestone 4: Core Features, Tab Navigation & Network Layer
+**Period:** Mid–Late September 2026
+- Developed primary application tabs:
+  - **Home**: Main schedule tracking UI
+  - **Inbox**: Ingestion hub
+  - **Insights**: Analytical overview of schedule distribution
+- Created dedicated subscription funnel (`(subscription)/subscribe.tsx`).
+- Standardized API calls with a centralized Axios client (`client.ts`) and modular service layer (`localApi.ts`)

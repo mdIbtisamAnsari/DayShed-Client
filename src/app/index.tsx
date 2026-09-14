@@ -14,7 +14,7 @@ export default function Index() {
     );
   }
 
-  if (isSignedIn) {
+  if (!isSignedIn) {
     return <Redirect href="/(root)/(tabs)/home" />;
   }
 
