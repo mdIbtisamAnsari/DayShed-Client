@@ -11,6 +11,8 @@ import React, { useEffect, useState } from "react";
 import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
 import { submitOtpAndRegisterUser, resendOtp } from "../../services/authApi";
 import axios from "axios";
+import { OtpInput } from "react-native-otp-entry";
+import { StyleSheet } from "react-native";
 
 export default function otp() {
   const [error, setError] = useState("");
@@ -53,21 +55,48 @@ export default function otp() {
           <Text className="text-5xl font-bold text-slate-50">DayShed</Text>
           <Text className="text-4xl font-bold text-slate-50 mt-3">Start Your Journey</Text>
         </View>
+        
         <View className="mt-5 py-7">
           {error ? <Text className="text-red-500 mt-3">{error}</Text> : null}
-          <Text className="text-slate-200 text-xl mt-3">
+          <Text className="text-slate-200 text-xl my-3">
             Enter the OTP sent to your email
           </Text>
-          <TextInput
-            className="bg-[#434D56] border-2 border-[#434D56] rounded-xl text-slate-100 p-2 mt-1 text-xl h-14"
-            placeholder="Enter OTP"
-            placeholderTextColor="C1C1C1"
-            value={otp}
-            onChangeText={setOtp}
-            keyboardType="number-pad"
+          <OtpInput
+            numberOfDigits={6}
+            focusColor="blue"
+            autoFocus={true}
+            hideStick={true}
+            placeholder=""
+            blurOnFilled={true}
+            disabled={false}
+            type="numeric"
+            secureTextEntry={false}
+            focusStickBlinkingDuration={500}
+            onTextChange={(text) => setOtp(text)}
+            onFilled={(text) => (setOtp(text), handleSubmitOtpAndRegisterUser())}
+            textInputProps={{
+              accessibilityLabel: "One-Time Password",
+            }}
+            textProps={{
+              accessibilityRole: "text",
+              accessibilityLabel: "OTP digit",
+              allowFontScaling: false,
+            }}
+            theme={{
+                containerStyle: styles.container,
+                pinCodeContainerStyle: styles.pinCodeContainer,
+                pinCodeTextStyle: styles.pinCodeText,
+                focusStickStyle: styles.focusStick,
+                focusedPinCodeContainerStyle: styles.activePinCodeContainer,
+                placeholderTextStyle: styles.placeholderText,
+                filledPinCodeContainerStyle: styles.filledPinCodeContainer,
+                disabledPinCodeContainerStyle: styles.disabledPinCodeContainer,
+              }}
+            
           />
 
-          <View className="flex-row justify-between mb-5">
+          <View className="flex-row justify-between my-5">
+            
             <Pressable
               className="text-blue-500 font-semibold"
               onPress={() => resendOtp(email)}
@@ -78,14 +107,35 @@ export default function otp() {
               <Text className="text-blue-500 font-semibold">Change Email</Text>
             </Pressable>
           </View>
-          <TouchableOpacity
-            className="bg-blue-500 p-2 mt-8 rounded-full"
-            onPress={handleSubmitOtpAndRegisterUser}
-          >
-            <Text className="text-white text-center text-xl font-normal">Submit</Text>
-          </TouchableOpacity>
         </View>
       </View>
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    borderBlockColor: "#fff",
+  },
+  pinCodeContainer: {
+    
+  },
+  pinCodeText: {
+    color: "#fff",
+  },
+  focusStick: {
+    
+  },
+  activePinCodeContainer: {
+    borderBlockColor: "#fff",
+  },
+  placeholderText: {
+    
+  },
+  filledPinCodeContainer: {
+    
+  },
+  disabledPinCodeContainer: {
+    
+  },
+});

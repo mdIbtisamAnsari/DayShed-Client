@@ -17,11 +17,8 @@ import { loginUser, handleGoogleSignIn } from "../../services/authApi";
 import { useRouter } from "expo-router";
 
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { AntDesign } from '@expo/vector-icons'
+import { AntDesign } from "@expo/vector-icons";
 
-
-
-import { API_BASE_URL } from "../../../constants";
 
 
 export default function signin() {
@@ -34,8 +31,8 @@ export default function signin() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   useEffect(() => {
-    setError('')
-  },[email, password])
+    setError("");
+  }, [email, password]);
 
   const handleSignIn = async () => {
     try {
@@ -59,12 +56,9 @@ export default function signin() {
 
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId:
-        process.env.WEB_CLIENT_ID, // From Google Cloud (Web Client ID)
+      webClientId: process.env.WEB_CLIENT_ID,
     });
   }, []);
-
-  
 
   return (
     <KeyboardAvoidingView className="flex-1" behavior="padding">
@@ -150,11 +144,15 @@ export default function signin() {
           <View className="flex-1 h-[1px] bg-slate-500/40" />
         </View>
 
-        <TouchableOpacity className="bg-[#434D56] py-3 px-3 rounded-full flex-row items-center mt-5" onPress={handleGoogleSignIn}>
+        <TouchableOpacity
+          className="bg-[#434D56] py-3 px-3 rounded-full flex-row items-center mt-5"
+          onPress={handleGoogleSignIn}
+        >
           <AntDesign name="google" size={20} color="#E5E7EB" />
-          <Text className="text-gray-100 flex-1 text-center -translate-x-4 text-lg">Continue with Google</Text>
+          <Text className="text-gray-100 flex-1 text-center -translate-x-4 text-lg">
+            Continue with Google
+          </Text>
         </TouchableOpacity>
-        
 
         <View className="flex-1 flex-row items-end justify-center mb-5">
           <Text className="text-gray-200">Don't have an account? </Text>
