@@ -28,7 +28,7 @@ export default function otp() {
   const handleSubmitOtpAndRegisterUser = async () => {
     try {
       await submitOtpAndRegisterUser(name, email, password, otp).then(() => {
-        router.push("/(root)/(tabs)/home");
+        router.replace("/(root)/(tabs)/home");
       });
     } catch (error) {
       const message = axios.isAxiosError(error)
@@ -52,10 +52,9 @@ export default function otp() {
     <KeyboardAvoidingView className="flex-1" behavior="padding">
       <View className="flex-1 mt-28 mx-4">
         <View className="flex">
-          <Text className="text-5xl font-bold text-slate-50">DayShed</Text>
+          <Text className="text-5xl font-bold text-slate-50">DayShed -</Text>
           <Text className="text-4xl font-bold text-slate-50 mt-3">Start Your Journey</Text>
         </View>
-        
         <View className="mt-5 py-7">
           {error ? <Text className="text-red-500 mt-3">{error}</Text> : null}
           <Text className="text-slate-200 text-xl my-3">

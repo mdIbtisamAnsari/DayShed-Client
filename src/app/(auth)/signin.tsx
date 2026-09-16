@@ -41,7 +41,7 @@ export default function signin() {
         return;
       }
       await loginUser(email, password).then(() => {
-        router.push("/(root)/(tabs)/home");
+        router.replace("/(root)/(tabs)/home");
       });
     } catch (err) {
       console.error("Sign-in error:", err);
@@ -122,7 +122,7 @@ export default function signin() {
 
           <Pressable
             className="self-end"
-            onPress={() => router.push("/(auth)/forgotPassword")}
+            onPress={() => router.replace("/(auth)/forgotPassword")}
           >
             <Text className="text-blue-500 font-medium mb-10">
               Forgot Password?

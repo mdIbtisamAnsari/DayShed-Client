@@ -53,7 +53,7 @@ export default function forgotPassword() {
       }
       const response = await submitNewPasswordWithOtp(otp, email, newPassword);
       console.log(response);
-      router.push('/(root)/(tabs)/home');
+      router.replace('/(root)/(tabs)/home');
 
     } catch (error) {
       console.error(error);
@@ -67,27 +67,33 @@ export default function forgotPassword() {
   }, [email, otp, newPassword, confirmNewPassword])
 
   return (
-    <KeyboardAvoidingView className="flex-1 bg-slate-200" behavior='padding'>
+    <KeyboardAvoidingView className="flex-1" behavior='padding'>
       <View className="flex-1 m-4 justify-center" >
 
-        <View className='flex-row items-center'>
-          <Image
-            source={require('../../../assets/icon.png')}
-            className="w-16 h-16"
-          />
-          <Text className='text-4xl font-bold text-blue-500'>DayShed</Text>
+        <View className="flex">
+          <Text className="text-5xl font-bold text-slate-50">DayShed -</Text>
+          <Text className="text-4xl font-bold text-slate-50 mt-3">Forgot Password ?</Text>
         </View>
 
-        <Text className='font-semibold text-xl mx-4'>Forgot Password</Text>
-        {error ? <Text className='text-red-500 mx-4'>{error}</Text> : null}
+        <Text className='text-gray-100 text-xl mt-5'></Text>
+        {error ? <Text className='text-red-500'>{error}</Text> : null}
         {!sentOtp && (
-          <View className='mt-4 bg-gray-100 px-4 py-7 rounded-lg'>
-            <Text className='text-gray-700 font-semibold'>Email</Text>
+          <View className=''>
+            <Text className='text-gray-100 text-xl'>Enter Your Registered Email</Text>
 
-            <View className='mt-2 flex-row items-center'>
+            <View className='mt-2'>
               <TextInput
-                className='border border-gray-300 rounded-md p-2 flex-1'
+                className='
+                bg-[#434D56]
+                rounded-xl
+                border-2
+                border-[#434D56]
+                px-3
+                text-lg
+                focus:border-blue-800/80
+                text-white'
                 placeholder='Enter Your Email'
+                placeholderTextColor="#C1C1C1"
                 autoComplete='email'
                 value={email}
                 onChangeText={setEmail}
@@ -95,10 +101,10 @@ export default function forgotPassword() {
                 autoCapitalize='none'
               />
               <Pressable
-                className='bg-blue-500 py-2 px-4 rounded-md'
+                className='bg-blue-500 rounded-full py-2 mt-10'
                 onPress={handleGetOtp}
               >
-                <Text className='text-white text-center font-semibold'>Get OTP</Text>
+                <Text className='text-gray-100 text-2xl text-center font-semibold'>Get OTP</Text>
               </Pressable>
             </View>
           </View>

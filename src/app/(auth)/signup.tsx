@@ -55,7 +55,7 @@ export default function signup() {
     }
     try {
       await getOtp(email).then(() => {
-        router.push({
+        router.replace({
           pathname: "/(auth)/otp",
           params: { email, name, password },
         });
@@ -77,7 +77,7 @@ export default function signup() {
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
       >
-        <View className="flex-1 mt-2 mx-4">
+        <View className="flex-1 mt-5 mx-4">
           <View className="flex">
             <View className="flex">
               <Text className="text-5xl font-bold text-slate-50">
