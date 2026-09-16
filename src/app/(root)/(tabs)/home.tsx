@@ -4,7 +4,9 @@ import React from 'react'
 export default function home() {
   return (
     <View>
-      <Text>This is the home screen</Text>
+      <Text>
+        this is the home page
+      </Text>
     </View>
   )
 }

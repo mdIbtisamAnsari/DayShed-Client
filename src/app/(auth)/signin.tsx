@@ -1,99 +1,192 @@
-import { View, Text, Image, TextInput, KeyboardAvoidingView, Platform, Pressable } from 'react-native'
-import React, { useState } from 'react'
-import { Link } from 'expo-router'
-import axios from 'axios'
-import { loginUser } from "../../services/authApi"
+import {
+  View,
+  Text,
+  Image,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  Button,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import { Link } from "expo-router";
+import axios from "axios";
+import { loginUser } from "../../services/authApi";
 import { useRouter } from "expo-router";
+
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { AntDesign } from '@expo/vector-icons'
+
+
+
+import { API_BASE_URL } from "../../../constants";
 
 
 export default function signin() {
-
-
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const router = useRouter();
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
+  useEffect(() => {
+    setError('')
+  },[email, password])
+
   const handleSignIn = async () => {
     try {
-      if(!email || !password) {
+      if (!email || !password) {
         setError("Email and Password are required");
         return;
       }
-      await loginUser(email, password)
-        .then(() => {
-          router.push('/(root)/(tabs)/home')
-        })
+      await loginUser(email, password).then(() => {
+        router.push("/(root)/(tabs)/home");
+      });
     } catch (err) {
-      console.error('Sign-in error:', err)
+      console.error("Sign-in error:", err);
 
-      const message = axios.isAxiosError(err) ? err.response?.data?.message : "An error occurred during sign-in. Please try again."
-      
+      const message = axios.isAxiosError(err)
+        ? err.response?.data?.message
+        : "An error occurred during sign-in. Please try again.";
+
       setError(message);
     }
-  }
+  };
 
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        "42098030837-omqs5emai0bnuk0t9nou5tshlh4ckval.apps.googleusercontent.com", // From Google Cloud (Web Client ID)
+    });
+  }, []);
 
+  const handleGoogleSignIn = async () => {
+    try {
+      // await GoogleSignin.signOut();
+
+      await GoogleSignin.hasPlayServices();
+
+      // Perform Google login
+      const signInResult = await GoogleSignin.signIn();
+      const idToken = signInResult.data?.idToken;
+
+      // Send token to Node.js backend
+      const response: any = await fetch(`${API_BASE_URL}/api/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        console.log("Authenticated with Node.js:", data.user);
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+    }
+  };
 
   return (
-    <KeyboardAvoidingView className="flex-1" behavior='padding'>
-      <View className="flex-1 m-4 justify-center">
-        <View className='flex-row items-center'>
-          <Image
-            source={require('../../../assets/icon.png')}
-            className="w-16 h-16"
-          />
+    <KeyboardAvoidingView className="flex-1" behavior="padding">
+      <View className="flex-1 mx-4 mt-10">
+        <Text className="text-gray-50 text-5xl font-bold">DayShed -</Text>
+        <Text className="text-gray-100 text-5xl font-bold mt-2">
+          Welcome Back
+        </Text>
 
-          <Text className='text-4xl font-bold text-blue-500'>DayShed</Text>
-        </View>
-        <Text className='text-gray-700 mx-2'>Sign in to your account</Text>
-        <View className='mt-4 bg-gray-100 px-4 py-7 rounded-lg'>
-          {error ? <Text className='text-red-500'>{error}</Text> : null}
-          <Text className='text-gray-700 font-semibold'>Email</Text>
+        <View className="my-5">
+          {error ? <Text className="text-red-500">{error}</Text> : null}
+          <Text className="text-gray-100 text-xl">Email Address</Text>
           <TextInput
-            className='border border-gray-300 rounded-md p-2 mt-1'
-            placeholder='Enter Your Email'
-            autoComplete='email'
+            className="
+            bg-[#434D56]
+            rounded-xl
+            border-2
+            border-[#434D56]
+            px-3
+            text-lg
+            focus:border-blue-800/80
+            mb-3
+            text-white
+            "
+            placeholder="Enter Your Email"
+            placeholderTextColor="#C1C1C1"
+            autoComplete="email"
             value={email}
             onChangeText={setEmail}
-            keyboardType='email-address'
-            autoCapitalize='none'
+            keyboardType="email-address"
+            autoCapitalize="none"
           />
 
-          <View className='flex-row justify-between mt-5'>
-          <Text className='text-gray-700 font-semibold'>Password</Text>
-          <Pressable onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
-            <Text className='text-blue-500 font-semibold'>
-              {isPasswordVisible ? 'Hide Password' : 'Show Password'}
-            </Text>
-          </Pressable>
+          <View className="flex-row items-end justify-between">
+            <Text className="text-gray-100 text-xl">Password</Text>
+            <Pressable onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+              <Text className="text-blue-500 font-medium">
+                {isPasswordVisible ? "Hide Password" : "Show Password"}
+              </Text>
+            </Pressable>
           </View>
 
           <TextInput
-            className='border border-gray-300 rounded-md p-2 mt-1'
-            placeholder='Enter Your Password'
+            className="
+            bg-[#434D56]
+            rounded-xl
+            border-2
+            border-[#434D56]
+            px-3
+            text-lg
+            focus:border-blue-800/80
+            text-white
+            "
+            placeholder="Enter Your Password"
+            placeholderTextColor="#C1C1C1"
             secureTextEntry={!isPasswordVisible}
             value={password}
             onChangeText={setPassword}
-            autoCapitalize='none'
+            autoCapitalize="none"
           />
-          <Pressable className="items-end mt-2" onPress={() => router.push('/(auth)/forgotPassword')}>
-            <Text className='text-blue-500 font-semibold'>Forgot Password?</Text>
+
+          <Pressable
+            className="self-end"
+            onPress={() => router.push("/(auth)/forgotPassword")}
+          >
+            <Text className="text-blue-500 font-medium mb-10">
+              Forgot Password?
+            </Text>
           </Pressable>
-          <Pressable className='bg-blue-500 rounded-md p-2 mt-7' onPress={handleSignIn}>
-            <Text className='text-white text-center font-semibold'>Sign In</Text>
+          <Pressable
+            className="bg-blue-500 rounded-full py-2"
+            onPress={handleSignIn}
+          >
+            <Text className="text-gray-100 text-2xl text-center font-semibold">
+              Sign In
+            </Text>
           </Pressable>
         </View>
-        <View className='flex-row justify-center mt-4'>
-          <Text className='text-gray-700'>Don't have an account? </Text>
+
+        <View className="flex-row items-center my-1 w-full px-4">
+          <View className="flex-1 h-[1px] bg-slate-500/40" />
+          <Text className="mx-4 text-slate-400 text-md font-medium">or</Text>
+          <View className="flex-1 h-[1px] bg-slate-500/40" />
+        </View>
+
+        <TouchableOpacity className="bg-[#434D56] py-3 px-3 rounded-full flex-row items-center mt-5" onPress={handleGoogleSignIn}>
+          <AntDesign name="google" size={20} color="#E5E7EB" />
+          <Text className="text-gray-100 flex-1 text-center -translate-x-4 text-lg">Continue with Google</Text>
+        </TouchableOpacity>
+        
+
+        <View className="flex-1 flex-row items-end justify-center mb-5">
+          <Text className="text-gray-200">Don't have an account? </Text>
           <Link href="/(auth)/signup">
-            <Text className='text-blue-500 font-semibold'>Sign Up</Text> 
+            <Text className="text-blue-500">Sign Up</Text>
           </Link>
         </View>
       </View>
     </KeyboardAvoidingView>
-  )
+  );
 }

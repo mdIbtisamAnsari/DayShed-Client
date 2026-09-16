@@ -1,17 +1,24 @@
 {
   "expo": {
     "name": "DayShed",
-    "slug": "DayShed",
+    "slug": "dayshed-project-ibtisam-1",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "dayshed",
     "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "ios": {
-      "icon": "./assets/icon.png"
+      "icon": "./assets/icon.png",
+      "bundleIdentifier": "com.dayshed.sheduler"
     },
     "android": {
-      "softwareKeyboardLayoutMode": "resize",
+      "package": "com.dayshed.sheduler",
+      "softwareKeyboardLayoutMode": "pan",
       "predictiveBackGestureEnabled": false
     },
     "web": {
@@ -20,18 +27,28 @@
     },
     "plugins": [
       "expo-router",
+      "@react-native-google-signin/google-signin",
       [
         "expo-splash-screen",
         {
-          "imageWidth": 76
+          "image": "./assets/icon.png",
+          "imageWidth": 76,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
         }
       ],
-      
       "expo-secure-store"
     ],
     "experiments": {
-      "typedRoutes": true, 
+      "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7113992f-6753-4e3f-9566-01e4a40ef095"
+      }
+    },
+    "owner": "ibtisamansari"
   }
 }

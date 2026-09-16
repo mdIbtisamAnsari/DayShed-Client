@@ -5,8 +5,6 @@ import "../../../global.css"
 
 export default function AuthLayout() {
     return (
-        <SafeAreaView className="flex-1 bg-slate-200">
-            <Slot />
-        </SafeAreaView>
+      <Slot/>
     )
 }
