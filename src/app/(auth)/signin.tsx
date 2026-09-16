@@ -13,7 +13,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { Link } from "expo-router";
 import axios from "axios";
-import { loginUser } from "../../services/authApi";
+import { loginUser, handleGoogleSignIn } from "../../services/authApi";
 import { useRouter } from "expo-router";
 
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
@@ -60,35 +60,11 @@ export default function signin() {
   useEffect(() => {
     GoogleSignin.configure({
       webClientId:
-        "42098030837-omqs5emai0bnuk0t9nou5tshlh4ckval.apps.googleusercontent.com", // From Google Cloud (Web Client ID)
+        process.env.WEB_CLIENT_ID, // From Google Cloud (Web Client ID)
     });
   }, []);
 
-  const handleGoogleSignIn = async () => {
-    try {
-      // await GoogleSignin.signOut();
-
-      await GoogleSignin.hasPlayServices();
-
-      // Perform Google login
-      const signInResult = await GoogleSignin.signIn();
-      const idToken = signInResult.data?.idToken;
-
-      // Send token to Node.js backend
-      const response: any = await fetch(`${API_BASE_URL}/api/auth/google`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken }),
-      });
-      const data = await response.json();
-
-      if (data.success) {
-        console.log("Authenticated with Node.js:", data.user);
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-    }
-  };
+  
 
   return (
     <KeyboardAvoidingView className="flex-1" behavior="padding">

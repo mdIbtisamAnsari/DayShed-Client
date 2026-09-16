@@ -1,5 +1,7 @@
 import { apiClient } from '../api/client';import { API_BASE_URL } from "../../constants";
-import otp from '@/app/(auth)/otp';
+
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+
 
 
 
@@ -121,3 +123,29 @@ export const submitNewPasswordWithOtp = async(otp:string, email:string, newPassw
         throw error;
     }
 }
+
+export const handleGoogleSignIn = async () => {
+  try {
+    // await GoogleSignin.signOut();
+
+    await GoogleSignin.hasPlayServices();
+
+    // Perform Google login
+    const signInResult = await GoogleSignin.signIn();
+    const idToken = signInResult.data?.idToken;
+
+    // Send token to Node.js backend
+    const response: any = await fetch(`${API_BASE_URL}/api/auth/google`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    });
+    const data = await response.json();
+
+    if (data.success) {
+      console.log("Authenticated with Node.js:", data.user);
+    }
+  } catch (error) {
+    console.error("Login error:", error);
+  }
+};
