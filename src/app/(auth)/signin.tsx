@@ -122,7 +122,7 @@ export default function signin() {
 
           <Pressable
             className="self-end"
-            onPress={() => router.replace("/(auth)/forgotPassword")}
+            onPress={() => router.push("/(auth)/forgotPassword")}
           >
             <Text className="text-blue-500 font-medium mb-10">
               Forgot Password?

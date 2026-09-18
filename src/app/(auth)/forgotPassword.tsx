@@ -1,4 +1,4 @@
-import { View, Text, KeyboardAvoidingView, Image, TextInput, Pressable } from 'react-native'
+import { View, Text, KeyboardAvoidingView, Image, TextInput, Pressable, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { getOtp, submitNewPasswordWithOtp } from "../../services/authApi"
 import axios from 'axios';
@@ -68,7 +68,8 @@ export default function forgotPassword() {
 
   return (
     <KeyboardAvoidingView className="flex-1" behavior='padding'>
-      <View className="flex-1 m-4 justify-center" >
+      <ScrollView className="flex-1">
+        <View className="flex-1 m-4 mt-8" >
 
         <View className="flex">
           <Text className="text-5xl font-bold text-slate-50">DayShed -</Text>
@@ -111,16 +112,24 @@ export default function forgotPassword() {
         )}
 
         {sentOtp && (
-          <View className='mt-4 bg-gray-100 px-4 py-7 rounded-lg'>
+          <View className='mt-4 px-4 py-2 rounded-lg'>
             <Text className='text-green-500 mt-3'>OTP sent successfully!</Text>
             <View className='flex-row justify-between mt-3'>
-              <Text className='text-gray-700'>Enter OTP</Text>
+              <Text className='text-gray-100 text-xl'>Enter OTP</Text>
               <Pressable className='text-blue-500 font-semibold' onPress={() => setSentOtp(false)}>
                 <Text className='text-blue-500 font-semibold'>Change Email</Text>
               </Pressable>
             </View>
             <TextInput
-              className='bg-white border rounded-md mt-2'
+              className='
+              bg-[#434D56]
+              rounded-xl
+              border-2
+              border-[#434D56]
+              px-3
+              text-lg
+              focus:border-blue-800/80
+              text-white mb-3'
               placeholder='Enter OTP'
               value={otp}
               maxLength={6}
@@ -128,23 +137,39 @@ export default function forgotPassword() {
               keyboardType='number-pad'
             />
             <View className='flex-row justify-between'>
-              <Text className='mt-2'>New Password</Text>
+              <Text className='text-gray-100 text-xl'>New Password</Text>
               <Pressable onPress={handleShowPassword}>
                 {!isPasswordVisible && <Text className='mt-2 font-semibold text-blue-500'>Show Password</Text>}
                 {isPasswordVisible && <Text className='mt-2 font-semibold text-blue-500'>Hide Password</Text>}
               </Pressable>
             </View>
             <TextInput
-              className='bg-white border rounded-md mt-2'
+              className='
+              bg-[#434D56]
+              rounded-xl
+              border-2
+              border-[#434D56]
+              px-3
+              text-lg
+              focus:border-blue-800/80
+              text-white mb-3'
               placeholder='Enter New Password'
               value={newPassword}
               onChangeText={setNewPassword}
               secureTextEntry={!isPasswordVisible}
               autoCapitalize='none'
             />
-            <Text className='mt-2'>Confirm New Password</Text>
+            <Text className='text-gray-100 text-xl'>Confirm New Password</Text>
             <TextInput
-              className='bg-white border rounded-md mt-2'
+              className='
+              bg-[#434D56]
+              rounded-xl
+              border-2
+              border-[#434D56]
+              px-3
+              text-lg
+              focus:border-blue-800/80
+              text-white mb-3'
               placeholder='Confirm New Password'
               value={confirmNewPassword}
               onChangeText={setContirmNewPassword}
@@ -152,12 +177,13 @@ export default function forgotPassword() {
               autoCapitalize='none'
             />
 
-            <Pressable className='bg-blue-500 mt-4 p-2 rounded-md justify-center' onPress={handleSubmit}>
-              <Text className='text-white text-center'>Submit</Text>
+            <Pressable className='bg-blue-500 rounded-full py-2 mt-10' onPress={handleSubmit}>
+              <Text className='text-gray-100 text-2xl text-center font-semibold'>Submit</Text>
             </Pressable>
 
           </View>)}
-      </View>
+        </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   )
 }
