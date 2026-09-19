@@ -26,6 +26,13 @@
       "favicon": "./assets/icon.png"
     },
     "plugins": [
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access the microphone for speech input.",
+          "speechRecognitionPermission": "Allow $(PRODUCT_NAME) to process your speech for voice input."
+        }
+      ],
       "expo-router",
       "@react-native-google-signin/google-signin",
       [

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ArcProgress from "@/helper/arkProvider";
 import { useRouter } from "expo-router";
+import VoiceInputScreen from "../(subscription)/subscribe";
 
 export default function Home() {
   const router = useRouter();
@@ -65,7 +66,7 @@ export default function Home() {
       </View>
       <View className="py-4 px-4">
         <Text className="text-white text-lg font-normal">
-          hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+          <VoiceInputScreen/>
         </Text>
       </View>
     </SafeAreaView>
