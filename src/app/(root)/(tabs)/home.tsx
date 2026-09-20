@@ -3,11 +3,11 @@ import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ArcProgress from "@/helper/arkProvider";
 import { useRouter } from "expo-router";
-import VoiceInputScreen from "../(subscription)/subscribe";
+import VoiceInputScreen from "@/helper/voiceInputProvider";
 
 export default function Home() {
   const router = useRouter();
-  
+
   const now = new Date();
   const formattedDate = now.toLocaleDateString("en-US", {
     weekday: "long",
@@ -16,11 +16,9 @@ export default function Home() {
   });
 
   const [aiCredits, setAiCredits] = useState(0);
+  const [todaysFocus, setTodaysFocus] = useState("Add Tasks To Get Started!");
 
-  setTimeout(
-    () => setAiCredits(1),
-    1000
-  )
+  setTimeout(() => setAiCredits(0), 1000);
 
   return (
     <SafeAreaView className="flex-1 bg-transparent">
@@ -51,10 +49,11 @@ export default function Home() {
             className="absolute bg-slate-800 rounded-full"
             size={38}
             strokeWidth={4}
-            progress={aiCredits}
+            progress={1}
             arcSweepAngle={270} // 270° arc (gauge style)
             rotation={45} // starts at 135° (bottom-left)
-            colors={["red", "yellow", "green"]}
+            colors={["orange", "yellow", "cyan"]}
+            backgroundColor="gray"
           >
             {aiCredits ? (
               <Text className="text-white -rotate-90">AI</Text>
@@ -64,10 +63,13 @@ export default function Home() {
           </ArcProgress>
         </TouchableOpacity>
       </View>
-      <View className="py-4 px-4">
-        <Text className="text-white text-lg font-normal">
-          <VoiceInputScreen/>
-        </Text>
+      <View className="flex-row mx-4">
+0        <Text className="text-gray-300 font-light">Today's Focus: </Text>
+        <Text className="text-white font-bold">{todaysFocus}</Text>
+      </View>
+
+      <View className="m-4 bg-[#1b264f]  border-[#5c24e6] border-2 rounded-xl px-2 shadow-2xl shadow-violet-500">
+        <VoiceInputScreen />
       </View>
     </SafeAreaView>
   );

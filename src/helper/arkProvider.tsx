@@ -44,12 +44,11 @@ const ArcProgress = ({
 
   // Arc geometry (shared by track + progress)
   const arcPath = useMemo(() => {
-    const p = Skia.Path.Make();
-    p.addArc(
+    const p = Skia.PathBuilder.Make().addArc(
       { x: center - radius, y: center - radius, width: radius * 2, height: radius * 2 },
       rotation,
       arcSweepAngle
-    );
+    ).build();
     return p;
   }, [radius, center, rotation, arcSweepAngle]);
 
