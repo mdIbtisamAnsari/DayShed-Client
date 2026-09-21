@@ -64,7 +64,7 @@ export default function Home() {
         </TouchableOpacity>
       </View>
       <View className="flex-row mx-4">
-0        <Text className="text-gray-300 font-light">Today's Focus: </Text>
+        <Text className="text-gray-300 font-light">Today's Focus: </Text>
         <Text className="text-white font-bold">{todaysFocus}</Text>
       </View>
 
