@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import ArcProgress from "@/helper/arkProvider";
 import { useRouter } from "expo-router";
 import VoiceInputScreen from "@/helper/voiceInputProvider";
+import TableProvider from "@/helper/TableProvider";
 
 export default function Home() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function Home() {
   setTimeout(() => setAiCredits(0), 1000);
 
   return (
-    <SafeAreaView className="flex-1 bg-transparent">
+    <SafeAreaView className="flex-1 bg-transparent pb-28">
       <View className="flex-row items-center mt-5">
         <View className="flex-1 py-4 px-4">
           <Text className="text-white text-3xl font-bold">DayShed</Text>
@@ -49,7 +50,7 @@ export default function Home() {
             className="absolute bg-slate-800 rounded-full"
             size={38}
             strokeWidth={4}
-            progress={1}
+            progress={aiCredits}
             arcSweepAngle={270} // 270° arc (gauge style)
             rotation={45} // starts at 135° (bottom-left)
             colors={["orange", "yellow", "cyan"]}
@@ -68,9 +69,14 @@ export default function Home() {
         <Text className="text-white font-bold">{todaysFocus}</Text>
       </View>
 
-      <View className="m-4 bg-[#1b264f]  border-[#5c24e6] border-2 rounded-xl px-2 shadow-2xl shadow-violet-500">
+      <View className="my-1">
         <VoiceInputScreen />
       </View>
+
+      <Text className="text-gray-200 font-bold text-lg mx-4">
+        Today's Dynamic Timeline
+      </Text>
+      <TableProvider/>
     </SafeAreaView>
   );
 }

@@ -7,7 +7,7 @@ import {
   Keyboard,
   Alert,
   ActivityIndicator,
-  Text,
+  Text
 } from "react-native";
 import {
   ExpoSpeechRecognitionModule,
@@ -36,6 +36,7 @@ export default function VoiceInputScreen() {
       const data: string = await callSendPromptApi(textToSubmit);
       SetInputText("");
       setIsManualTextWriting(false);
+      setError(null);
     } catch (error) {
       const message = axios.isAxiosError(error)
         ? error.response?.data?.message
@@ -164,8 +165,8 @@ export default function VoiceInputScreen() {
 
   return (
     <>
-    <View className="flex-row items-center">
-      <View className="flex-1 flex-row items-center bg-gray-800 rounded-lg px-0 py-0 mr-2 border border-gray-700">
+    <View className="flex-row items-center mx-4 bg-[#1b264f]  border-[#5c24e6] border-2 rounded-xl px-2 shadow-2xl shadow-violet-500">
+      <View className="flex-1 flex-row items-center mr-2">
         <TextInput
           ref={inputRef}
           value={
@@ -220,11 +221,11 @@ export default function VoiceInputScreen() {
            <ActivityIndicator color="#6338ca" />
         </View>
       ) : isManualTextWriting ? (
-        <TouchableOpacity className="bg-[#6338ca]" onPress={handelSendPrompt}>
+        <TouchableOpacity className="" onPress={handelSendPrompt}>
           <Ionicons name="send-sharp" size={20} color="white" />
         </TouchableOpacity>
       ) : (
-        <TouchableOpacity className="bg-[#6338ca]" onPress={handleToggleListening}>
+        <TouchableOpacity className="" onPress={handleToggleListening}>
           {isRecognizing ? (
             <Ionicons name="stop-circle" size={28} color="white" />
           ) : (
@@ -233,7 +234,7 @@ export default function VoiceInputScreen() {
         </TouchableOpacity>
       )}
       </View>
-      {error ? <Text className="text-red-500 mt-3">{error||"Something went wrong"}</Text> : null}
+      {error ? <Text className="text-red-500 mx-5 mt-2">{error||"Something went wrong"}</Text> : null}
     </>
   );
 }
