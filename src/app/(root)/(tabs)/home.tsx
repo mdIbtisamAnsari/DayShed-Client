@@ -78,7 +78,7 @@ export default function Home() {
         Today's Dynamic Timeline
       </Text>
       <View className="flex-1">
-        <View className="flex-1">
+        <View className="flex-1 mt-2">
           <TableProvider />
         </View>
         <LinearGradient
@@ -89,7 +89,7 @@ export default function Home() {
           pointerEvents="none" // Recommended so it doesn't block touches to elements behind it
         />
         <LinearGradient
-          colors={["#333", "#333", "transparent"]}
+          colors={["#1e293b", "#1e293b", "transparent"]}
           start={{ x: 0, y: 1 }}
           end={{ x: 0, y: 0 }}
           style={styles.gradient}
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 100,
+    height: 150,
   },
   gradientTop: {
     position: "absolute",

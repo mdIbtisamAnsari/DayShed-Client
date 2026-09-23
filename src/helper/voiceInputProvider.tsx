@@ -165,7 +165,7 @@ export default function VoiceInputScreen() {
 
   return (
     <>
-    <View className="flex-row items-center mx-4 bg-[#1b264f]  border-[#5c24e6] border-2 rounded-xl px-2 shadow-2xl shadow-violet-500">
+    <View className="flex-row items-center bg-white/10 rounded-2xl px-3 py-1 mx-4 my-2">
       <View className="flex-1 flex-row items-center mr-2">
         <TextInput
           ref={inputRef}
@@ -178,8 +178,8 @@ export default function VoiceInputScreen() {
           }}
           onKeyPress={() => setIsManualTextWriting(true)}
           placeholder="What's on your mind?"
-          className="flex-1 text-gray-200"
-          placeholderTextColor="gray"
+          className="flex-1 text-white text-base font-normal"
+          placeholderTextColor="#9CA3AF"
           showSoftInputOnFocus={enableKeyboard}
           readOnly={!enableKeyboard || isSubmitting}
           onSubmitEditing={() => {
@@ -193,7 +193,7 @@ export default function VoiceInputScreen() {
               style={{
                 height: bar1,
                 width: 4,
-                backgroundColor: "#6338ca",
+                backgroundColor: "#E5E7EB",
                 borderRadius: 2,
               }}
             />
@@ -201,7 +201,7 @@ export default function VoiceInputScreen() {
               style={{
                 height: bar2,
                 width: 4,
-                backgroundColor: "#6338ca",
+                backgroundColor: "#E5E7EB",
                 borderRadius: 2,
               }}
             />
@@ -209,7 +209,7 @@ export default function VoiceInputScreen() {
               style={{
                 height: bar3,
                 width: 4,
-                backgroundColor: "#6338ca",
+                backgroundColor: "#E5E7EB",
                 borderRadius: 2,
               }}
             />
@@ -217,24 +217,30 @@ export default function VoiceInputScreen() {
         )}
       </View>
       {isSubmitting ? (
-        <View className="p-2">
-           <ActivityIndicator color="#6338ca" />
+        <View className="bg-white/20 rounded-full p-2 ml-2 w-10 h-10 items-center justify-center">
+          <ActivityIndicator color="#E5E7EB" />
         </View>
       ) : isManualTextWriting ? (
-        <TouchableOpacity className="" onPress={handelSendPrompt}>
-          <Ionicons name="send-sharp" size={20} color="white" />
+        <TouchableOpacity 
+          className="bg-white/20 rounded-full p-2 ml-2 w-10 h-10 items-center justify-center" 
+          onPress={handelSendPrompt}
+        >
+          <Ionicons name="send" size={18} color="#E5E7EB" style={{ marginLeft: 2 }} />
         </TouchableOpacity>
       ) : (
-        <TouchableOpacity className="" onPress={handleToggleListening}>
+        <TouchableOpacity 
+          className="bg-white/20 rounded-full p-2 ml-2 w-10 h-10 items-center justify-center" 
+          onPress={handleToggleListening}
+        >
           {isRecognizing ? (
-            <Ionicons name="stop-circle" size={28} color="white" />
+            <Ionicons name="stop" size={20} color="#E5E7EB" />
           ) : (
-            <Ionicons name="mic-circle" size={28} color="white" />
+            <Ionicons name="mic" size={20} color="#E5E7EB" />
           )}
         </TouchableOpacity>
       )}
       </View>
-      {error ? <Text className="text-red-500 mx-5 mt-2">{error||"Something went wrong"}</Text> : null}
+      {error ? <Text className="text-red-400 mx-5 mt-1 text-sm">{error || "Something went wrong"}</Text> : null}
     </>
   );
 }
