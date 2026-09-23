@@ -5,6 +5,7 @@ import ArcProgress from "@/helper/arkProvider";
 import { useRouter } from "expo-router";
 import VoiceInputScreen from "@/helper/voiceInputProvider";
 import TableProvider from "@/helper/TableProvider";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Home() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function Home() {
   setTimeout(() => setAiCredits(0), 1000);
 
   return (
-    <SafeAreaView className="flex-1 bg-transparent pb-28">
+    <SafeAreaView className="flex-1 bg-transparent">
       <View className="flex-row items-center mt-5">
         <View className="flex-1 py-4 px-4">
           <Text className="text-white text-3xl font-bold">DayShed</Text>
@@ -76,7 +77,42 @@ export default function Home() {
       <Text className="text-gray-200 font-bold text-lg mx-4">
         Today's Dynamic Timeline
       </Text>
-      <TableProvider/>
+      <View className="flex-1">
+        <View className="flex-1">
+          <TableProvider />
+        </View>
+        <LinearGradient
+          colors={["#1e293b" , "#1e293b", "transparent"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.gradientTop}
+          pointerEvents="none" // Recommended so it doesn't block touches to elements behind it
+        />
+        <LinearGradient
+          colors={["#333", "#333", "transparent"]}
+          start={{ x: 0, y: 1 }}
+          end={{ x: 0, y: 0 }}
+          style={styles.gradient}
+          pointerEvents="none" // Recommended so it doesn't block touches to elements behind it
+        />
+      </View>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  gradient: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 100,
+  },
+  gradientTop: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 10,
+  },
+});

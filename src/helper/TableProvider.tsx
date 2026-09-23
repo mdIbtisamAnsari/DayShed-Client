@@ -1,6 +1,8 @@
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import React from "react";
 import { ScrollView } from "react-native";
+import { Background } from "expo-router/build/react-navigation";
+import { LinearGradient } from "expo-linear-gradient";
 
 type TimelineStatus =
   "completed" | "standard" | "active" | "flexible" | "system" | "lunch";
@@ -69,25 +71,62 @@ const timelineData: TimelineEvent[] = [
 
 export default function TableProvider() {
   return (
-    <ScrollView>
+    
+    <ScrollView >
+      
+     
       {timelineData.map((slot) => (
         <Slot key={slot.id} slot={slot} />
       ))}
+      <View className="h-32 w-10" />
     </ScrollView>
   );
 }
 
 function Slot({ slot }: { slot: TimelineEvent }) {
+  let backGroundColor, textColor;
+  slot.status === "completed"
+    ? ((backGroundColor = "bg-slate-500"), (textColor = "text-gray-200"))
+    : ((backGroundColor = "bg-blue-300"), (textColor = "text-gray-900"));
   return (
     <View className="flex-row mt-2">
       <View className="flex-col items-center">
-        <View className="w-2 h-2 bg-slate-50 rounded-full" />
-        <View className="flex-1 mx-4 bg-slate-800  border-[#5c24e6] border-r-2 shadow-xl shadow-violet-500 translate-y-1"></View>
+        <View className="w-3 h-3 bg-slate-500 rounded-full" />
+        <View className="flex-1 mx-4 bg-slate-800  border-slate-500 border-r-2 shadow-2xl shadow-violet-700 translate-y-1" />
       </View>
-      <View className="border border-slate-400 rounded-xl flex-1 mr-4 px-3">
-        <Text className="text-3xl">{slot.title}</Text>
-        <Text className="text-3xl">{slot.timeLabel}</Text>
+      <View
+        className={`flex-1 border border-blue-200 rounded-xl mt-1 mr-4 px-3 ${backGroundColor} shadow-2xl shadow-blue-300 ${textColor}`}
+      >
+        <Text className={`text-xl ${textColor}`}>{slot.title}</Text>
+        {slot?.timeLabel && (
+          <Text className={`text-md ${textColor}`}>{slot.timeLabel}</Text>
+        )}
+        {slot?.timeRange && (
+          <Text className={`text-md ${textColor}`}>{slot.timeRange}</Text>
+        )}
+        {slot?.subtitle && (
+          <Text className={`text-md ${textColor}`}>{slot.subtitle}</Text>
+        )}
+        {slot?.location && (
+          <Text className={`text-md ${textColor}`}>{slot.location}</Text>
+        )}
+        {slot.status && (
+          <Text className={`text-md ${textColor}`}>{slot.status}</Text>
+        )}
       </View>
     </View>
   );
 }
+
+
+
+
+const styles = StyleSheet.create({
+  gradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    top: 0,
+    height: 144,
+  },
+});

@@ -12,7 +12,7 @@ export default function TabLayout() {
     source={require('../../../../assets/backgrounds/bg.png')}
     resizeMode="cover"
     style={{ flex: 1 }}
-  >
+    >
 
     <Tabs
       screenOptions={{
