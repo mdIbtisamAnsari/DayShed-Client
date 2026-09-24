@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView } from "react-native";
+import { View, Text, Pressable, ScrollView, FlatList } from "react-native";
 import React, { useState } from "react";
 
 export type ScaleZeroToThree = 0 | 1 | 2 | 3;
@@ -172,7 +172,7 @@ const STATUS_STYLES: Record<
   }
 > = {
   in_progress: {
-    cardBg: "bg-slate-700/35",
+    cardBg: "bg-black/25",
     accentBorder: "border-l-sky-400/90",
     titleColor: "text-slate-100 font-medium",
     metaColor: "text-slate-400",
@@ -181,7 +181,7 @@ const STATUS_STYLES: Record<
     badgeText: "text-sky-300",
   },
   partially_completed: {
-    cardBg: "bg-slate-700/30",
+    cardBg: "bg-black/25",
     accentBorder: "border-l-amber-400/80",
     titleColor: "text-slate-100 font-medium",
     metaColor: "text-slate-400",
@@ -190,7 +190,7 @@ const STATUS_STYLES: Record<
     badgeText: "text-amber-300",
   },
   completed: {
-    cardBg: "bg-slate-900/30",
+    cardBg: "bg-black/15",
     accentBorder: "border-l-emerald-500/50",
     titleColor: "text-slate-400 line-through decoration-slate-600",
     metaColor: "text-slate-500",
@@ -199,7 +199,7 @@ const STATUS_STYLES: Record<
     badgeText: "text-emerald-400/80",
   },
   pending: {
-    cardBg: "bg-slate-700/20",
+    cardBg: "bg-black/30",
     accentBorder: "border-l-slate-600/60",
     titleColor: "text-slate-200 font-normal",
     metaColor: "text-slate-400",
@@ -208,9 +208,9 @@ const STATUS_STYLES: Record<
     badgeText: "text-slate-400",
   },
   cancelled: {
-    cardBg: "bg-slate-900/25",
+    cardBg: "bg-black/25",
     accentBorder: "border-l-rose-400/40",
-    titleColor: "text-slate-500 line-through decoration-slate-600",
+    titleColor: "text-slate-400 line-through decoration-slate-600",
     metaColor: "text-slate-600",
     dotColor: "bg-rose-500/40",
     badgeBg: "bg-rose-500/10",
@@ -218,12 +218,8 @@ const STATUS_STYLES: Record<
   },
 };
 
-const getTimeRange=(slot: any): { start: string; end: string }=> {
-  if (slot.timeRange) {
-    const parts = slot.timeRange.split("-");
-    return { start: parts[0]?.trim() || "", end: parts[1]?.trim() || "" };
-  }
-
+const getTimeRange = (slot: SlotItem): { start: string; end: string } => {
+  
   if (slot.startTime && slot.endTime) {
     const format = (d: string) =>
       new Date(d).toLocaleTimeString([], {
@@ -238,15 +234,15 @@ const getTimeRange=(slot: any): { start: string; end: string }=> {
     };
   }
 
-  return { start: slot.timeLabel || "", end: "" };
-}
+  return { start: "", end: "" };
+};
 
 const STATUS_CYCLE: Record<SlotStatus, SlotStatus> = {
   pending: "in_progress",
   in_progress: "partially_completed",
   partially_completed: "completed",
   completed: "cancelled",
-  cancelled: "pending", // fallback recovery
+  cancelled: "pending",
 };
 
 
@@ -265,42 +261,47 @@ export default function TableProvider() {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ paddingBottom: 128 }}>
-      {slots.map((slot: SlotItem) => {
+    <FlatList
+      data={slots}
+      contentContainerStyle={{ paddingBottom: 128 }}
+      keyExtractor={(slot :SlotItem) => slot.id.toString()}
+      renderItem={({ item: slot }: { item: SlotItem }) => {
         const currentStatus = slot.status || "pending";
         const theme = STATUS_STYLES[currentStatus] ?? STATUS_STYLES.pending;
         const { start, end } = getTimeRange(slot);
-
+  
         return (
-          <View key={slot.id} className="flex-row items-stretch my-1.5 px-3">
+          <View className="flex-row items-stretch my-1.5 px-3">
             {/* 1. Subtle Left Timestamp */}
             <View className="w-20 pr-1.5 pt-1 items-end justify-start">
-              <Text className="text-xs font-medium text-slate-300 tracking-tight">
+              <Text className="text-xs font-medium text-slate-100 tracking-tight">
                 {start}
               </Text>
               {end ? (
-                <Text className="text-[11px] text-slate-500 mt-0.5">{end}</Text>
+                <Text className="text-[11px] text-slate-200 mt-0.5">{end}</Text>
               ) : null}
             </View>
-
+  
             {/* 2. Soft Minimalist Timeline Axis */}
             <View className="flex-col items-center">
               <View
-                className={`w-2.5 h-2.5 rounded-full ${theme.dotColor} border-2 border-slate-800 mt-1.5`}
+                className={`w-2.5 h-2.5 rounded-full ${theme.dotColor} mt-1.5`}
               />
               <View className="flex-1 w-[1.5px] bg-slate-700/50 my-1" />
             </View>
-
+  
             {/* 3. Soft Card with Accent Strip */}
             <View className="flex-1 ml-3.5 mb-2.5">
-              <View className={`w-full rounded-2xl border-l-[3.5px] ${theme.accentBorder} ${theme.cardBg} px-4 py-3`}>
+              <View
+                className={`w-full rounded-2xl border-l-[3.5px] ${theme.accentBorder} ${theme.cardBg} px-4 py-3`}
+              >
                 <View className="flex-row justify-between items-center mb-1">
                   <Text
                     className={`text-[15px] flex-1 mr-2 leading-snug ${theme.titleColor}`}
                   >
                     {slot.title}
                   </Text>
-
+  
                   {slot.status && (
                     <Pressable
                       onPress={() => handleCycleStatus(slot.id)}
@@ -315,7 +316,7 @@ export default function TableProvider() {
                     </Pressable>
                   )}
                 </View>
-
+  
                 {slot?.description && (
                   <Text
                     className={`text-xs mt-1 leading-relaxed ${theme.metaColor}`}
@@ -324,7 +325,7 @@ export default function TableProvider() {
                   </Text>
                 )}
               </View>
-
+  
               {slot.systemComment && (
                 <Text
                   className={`text-xs ml-3 leading-relaxed ${theme.metaColor}`}
@@ -335,7 +336,7 @@ export default function TableProvider() {
             </View>
           </View>
         );
-      })}
-    </ScrollView>
+      }}
+    />
   );
 }
