@@ -232,4 +232,4 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
     color: '#A0AEC0',
   },
-});
+}); 
