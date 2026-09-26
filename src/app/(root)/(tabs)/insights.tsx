@@ -1,11 +1,23 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text, FlatList, ScrollView, TouchableOpacity } from 'react-native'
+import React, { useState } from 'react'
 import { Link } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ChartKitProvider, createChartPreset, LineChart } from "react-native-chart-kit/v2";
 
+interface task {
+  id: string;
+  title: string;
+  time: string;
+}
 
-const data = [
+interface dayData {
+  id: string;
+  date: string;
+  tasks: task[];
+}
+
+
+const datap = [
   { date: "01-01", productivity: 0.52 },
   { date: "02-01", productivity: 0.6 },
   { date: "03-01", productivity: 0.58 },
@@ -15,7 +27,7 @@ const data = [
   { date: "07-01", productivity: 0.25 },
 ];
 
-const INITIAL_DAYS_DATA = [
+const INITIAL_DAYS_DATA: dayData[] = [
   {
     id: '1',
     date: 'Oct 12',
@@ -62,13 +74,44 @@ const INITIAL_DAYS_DATA = [
 
 
 export default function Insights() {
+  const [data, setData] = useState(INITIAL_DAYS_DATA);
+
+  const renderDayColumn = ({ item: dayItem }:{item :dayData}) => (
+    <View className='bg-slate-500 mx-3'>
+      <View>
+        <Text >{dayItem.date}</Text>
+      </View>
+
+      {/* Column Tasks */}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+      >
+        {dayItem.tasks.map((task) => (
+          <TouchableOpacity
+            key={task.id}
+            activeOpacity={0.7}
+          >
+            <Text>
+              {task.time}
+            </Text>
+            <Text>
+              {task.title}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </View>
+  );
+
+
+  
   return (
     <SafeAreaView className='flex-1'>
       <View className='px-4 pt-5'>
         <Text className='text-3xl font-bold text-gray-200 mb-5'>Insights</Text>
         <ChartKitProvider mode="dark" preset="acme" presets={{acme}}>
           <LineChart
-            data={data}
+            data={datap}
             xKey="date"
             yKey="productivity"
             width={320}
@@ -81,7 +124,15 @@ export default function Insights() {
       </View>
       <View className='px-4'>
         <Text className='text-2xl font-bold text-gray-200 my-5'>Upcoming Schedule</Text>
-        
+        <FlatList
+          data={data}
+          renderItem={renderDayColumn}
+          keyExtractor={(item) => item.id}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          snapToInterval={280 + 12} // Column width + margin
+          decelerationRate="fast"
+        />
       </View>
     </SafeAreaView>
   )
