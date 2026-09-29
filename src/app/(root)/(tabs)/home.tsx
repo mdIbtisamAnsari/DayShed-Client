@@ -66,11 +66,10 @@ export default function Home() {
         </TouchableOpacity>
       </View>
       <View className="flex-row mx-4">
-        <Text className="text-gray-300 font-light">Today's Focus: </Text>
-        <Text className="text-white font-bold">{todaysFocus}</Text>
+        <Text className="text-slate-200 font-bold text-xl">Edit Using AI</Text>
       </View>
 
-      <View className="my-1">
+      <View className="mb-1">
         <VoiceInputScreen />
       </View>
 
@@ -82,7 +81,7 @@ export default function Home() {
           <TableProvider />
         </View>
         <LinearGradient
-          colors={["#1e293b" , "#1e293b", "transparent"]}
+          colors={["#1e293b", "#1e293b", "transparent"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
           style={styles.gradientTop}

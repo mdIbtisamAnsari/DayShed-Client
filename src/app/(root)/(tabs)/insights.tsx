@@ -1,11 +1,26 @@
-import { View, Text, FlatList, ScrollView, TouchableOpacity, Dimensions, StyleSheet, Modal, TextInput, KeyboardAvoidingView } from 'react-native'
-import React, { useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { ChartKitProvider, createChartPreset, LineChart } from "react-native-chart-kit/v2";
+import {
+  View,
+  Text,
+  FlatList,
+  ScrollView,
+  TouchableOpacity,
+  Dimensions,
+  StyleSheet,
+  Modal,
+  TextInput,
+  KeyboardAvoidingView,
+} from "react-native";
+import React, { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  ChartKitProvider,
+  createChartPreset,
+  LineChart,
+} from "react-native-chart-kit/v2";
 import VoiceInputScreen from "@/helper/voiceInputProvider";
 import { LinearGradient } from "expo-linear-gradient";
 
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 const CARD_WIDTH = screenWidth - 64;
 
 interface task {
@@ -33,120 +48,195 @@ const datap = [
 
 const INITIAL_DAYS_DATA: dayData[] = [
   {
-    id: '1',
-    date: 'Oct 12',
+    id: "1",
+    date: "Oct 12",
     tasks: [
-      { id: 't1', title: 'Team Sync Meeting', time: '12:10', description: 'Discuss sprint progress and blockers.' },
-      { id: 't2', title: 'Review PR #204', time: '12:15', description: 'Check navigation state and component mounts.' },
-      { id: 't3', title: 'Design System Update', time: '12:30', description: 'Align colors with dark mode specs.' },
-      { id: 't4', title: 'Design Update', time: '12:50', description: 'Update wireframes for the settings screen.' },
+      {
+        id: "t1",
+        title: "Team Sync Meeting",
+        time: "12:10",
+        description: "Discuss sprint progress and blockers.",
+      },
+      {
+        id: "t2",
+        title: "Review PR #204",
+        time: "12:15",
+        description: "Check navigation state and component mounts.",
+      },
+      {
+        id: "t3",
+        title: "Design System Update",
+        time: "12:30",
+        description: "Align colors with dark mode specs.",
+      },
+      {
+        id: "t4",
+        title: "Design Update",
+        time: "12:50",
+        description: "Update wireframes for the settings screen.",
+      },
     ],
   },
   {
-    id: '2',
-    date: 'Oct 13',
+    id: "2",
+    date: "Oct 13",
     tasks: [
-      { id: 't4', title: 'Client Presentation', time: '12:10', description: 'Walk through phase 1 deliverables.' },
-      { id: 't5', title: 'Database Optimization', time: '12:10', description: 'Index slow queries on user logs.' },
+      {
+        id: "t4",
+        title: "Client Presentation",
+        time: "12:10",
+        description: "Walk through phase 1 deliverables.",
+      },
+      {
+        id: "t5",
+        title: "Database Optimization",
+        time: "12:10",
+        description: "Index slow queries on user logs.",
+      },
     ],
   },
   {
-    id: '3',
-    date: 'Oct 14',
+    id: "3",
+    date: "Oct 14",
     tasks: [
-      { id: 't6', title: 'Sprint Planning', time: '12:10', description: 'Prioritize backlog tickets for next cycle.' },
-      { id: 't7', title: 'Update Documentation', time: '12:10', description: 'Add notes on chart kit setup.' },
-      { id: 't8', title: 'User Testing', time: '12:10', description: 'Observe user flow interactions.' },
+      {
+        id: "t6",
+        title: "Sprint Planning",
+        time: "12:10",
+        description: "Prioritize backlog tickets for next cycle.",
+      },
+      {
+        id: "t7",
+        title: "Update Documentation",
+        time: "12:10",
+        description: "Add notes on chart kit setup.",
+      },
+      {
+        id: "t8",
+        title: "User Testing",
+        time: "12:10",
+        description: "Observe user flow interactions.",
+      },
     ],
   },
   {
-    id: '4',
-    date: 'Oct 15',
+    id: "4",
+    date: "Oct 15",
     tasks: [
-      { id: 't9', title: 'Refactor Auth Flow', time: '12:10', description: 'Clean up token storage logic.' },
+      {
+        id: "t9",
+        title: "Refactor Auth Flow",
+        time: "12:10",
+        description: "Clean up token storage logic.",
+      },
     ],
   },
   {
-    id: '5',
-    date: 'Oct 16',
+    id: "5",
+    date: "Oct 16",
     tasks: [
-      { id: 't10', title: 'Deploy to Staging', time: '12:10', description: 'Verify environment variables.' },
-      { id: 't11', title: 'Weekly Retrospective', time: '12:10', description: 'Review team feedback.' },
+      {
+        id: "t10",
+        title: "Deploy to Staging",
+        time: "12:10",
+        description: "Verify environment variables.",
+      },
+      {
+        id: "t11",
+        title: "Weekly Retrospective",
+        time: "12:10",
+        description: "Review team feedback.",
+      },
     ],
   },
 ];
 
 export default function Insights() {
   const [data, setData] = useState<dayData[]>(INITIAL_DAYS_DATA);
-  
+
   // Edit modal states
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState<task | null>(null);
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
-  const [editTitle, setEditTitle] = useState('');
-  const [editTime, setEditTime] = useState('');
-  const [editDescription, setEditDescription] = useState('');
+  const [editTitle, setEditTitle] = useState("");
+  const [editTime, setEditTime] = useState("");
+  const [editDescription, setEditDescription] = useState("");
 
   const handleOpenEdit = (dayId: string, taskItem: task) => {
     setSelectedDayId(dayId);
     setSelectedTask(taskItem);
     setEditTitle(taskItem.title);
     setEditTime(taskItem.time);
-    setEditDescription(taskItem.description || '');
+    setEditDescription(taskItem.description || "");
     setModalVisible(true);
   };
 
   const handleSaveTask = () => {
     if (!selectedTask || !selectedDayId) return;
 
-    setData(prevData =>
-      prevData.map(day => {
+    setData((prevData) =>
+      prevData.map((day) => {
         if (day.id === selectedDayId) {
           return {
             ...day,
-            tasks: day.tasks.map(t =>
+            tasks: day.tasks.map((t) =>
               t.id === selectedTask.id
-                ? { ...t, title: editTitle, time: editTime, description: editDescription }
-                : t
+                ? {
+                    ...t,
+                    title: editTitle,
+                    time: editTime,
+                    description: editDescription,
+                  }
+                : t,
             ),
           };
         }
         return day;
-      })
+      }),
     );
 
     setModalVisible(false);
   };
 
   const renderDayColumn = ({ item: dayItem }: { item: dayData }) => (
-    <View style={{ width: CARD_WIDTH }} className='bg-black/30 border border-slate-700/50 mx-2 p-5 rounded-2xl'>
-      <View className='flex-row items-center justify-between mb-4 pb-3 border-b border-slate-800'>
-        <Text className='text-lg font-semibold text-slate-100 tracking-wide'>{dayItem.date}</Text>
-        <View className='bg-black/20 px-2.5 py-1 rounded-full border border-blue-500/20'>
-          <Text className='text-xs font-medium text-gray-300'>{dayItem.tasks.length} tasks</Text>
+    <View
+      style={{ width: CARD_WIDTH }}
+      className="bg-black/30 border border-slate-700/50 mx-2 p-5 rounded-2xl"
+    >
+      <View className="flex-row items-center justify-between mb-4 pb-3 border-b border-slate-800">
+        <Text className="text-lg font-semibold text-slate-100 tracking-wide">
+          {dayItem.date}
+        </Text>
+        <View className="bg-black/20 px-2.5 py-1 rounded-full border border-blue-500/20">
+          <Text className="text-xs font-medium text-gray-300">
+            {dayItem.tasks.length} tasks
+          </Text>
         </View>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} className='max-h-64'>
+      <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled={true} className="max-h-64">
         {dayItem.tasks.map((task) => (
           <TouchableOpacity
             key={task.id}
             activeOpacity={0.7}
             onPress={() => handleOpenEdit(dayItem.id, task)}
-            className='bg-slate-800/80 border border-slate-700/40 p-3.5 rounded-xl mb-2.5 flex-row items-center justify-between'
+            className="bg-slate-800/80 border border-slate-700/40 p-3.5 rounded-xl mb-2.5 flex-row items-center justify-between"
           >
-            <View className='flex-1 mr-3'>
-              <Text className='text-slate-200 font-medium text-sm mb-0.5' numberOfLines={1}>
+            <View className="flex-1 mr-3">
+              <Text
+                className="text-slate-200 font-medium text-sm mb-0.5"
+                numberOfLines={1}
+              >
                 {task.title}
               </Text>
               {task.description ? (
-                <Text className='text-slate-400 text-xs mt-1' numberOfLines={1}>
+                <Text className="text-slate-400 text-xs mt-1" numberOfLines={1}>
                   {task.description}
                 </Text>
               ) : null}
             </View>
-            <View className='bg-slate-700/50 px-2 py-0.5 rounded'>
-              <Text className='text-slate-400 text-xs font-mono'>
+            <View className="bg-slate-700/50 px-2 py-0.5 rounded">
+              <Text className="text-slate-400 text-xs font-mono">
                 {task.time}
               </Text>
             </View>
@@ -157,7 +247,7 @@ export default function Insights() {
   );
 
   return (
-    <SafeAreaView className='flex-1'>
+    <SafeAreaView className="flex-1">
       <LinearGradient
         colors={["#1e293b", "transparent"]}
         start={{ x: 0, y: 0 }}
@@ -165,12 +255,19 @@ export default function Insights() {
         style={styles.gradientTop}
         pointerEvents="none"
       />
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
         {/* Chart Section */}
-        <View className='px-4 pt-5'>
-          <Text className='text-2xl font-bold text-slate-100 mb-4 tracking-tight'>Insights</Text>
-          <View className='bg-black/50 border border-slate-700/50 p-4 rounded-2xl'>
-            <Text className='text-xl font-semibold text-slate-300 mb-2'>Your Productivity</Text>
+        <View className="px-4 pt-5">
+          <Text className="text-2xl font-bold text-slate-100 mb-4 tracking-tight">
+            Insights
+          </Text>
+          <View className="bg-black/50 border border-slate-700/50 p-4 rounded-2xl">
+            <Text className="text-xl font-semibold text-slate-300 mb-2">
+              Your Productivity
+            </Text>
             <ChartKitProvider mode="dark" preset="acme" presets={{ acme }}>
               <LineChart
                 data={datap}
@@ -186,22 +283,28 @@ export default function Insights() {
           </View>
         </View>
 
-        <Text className='mx-4 mt-5 font-semibold text-xl text-slate-300'>Edit Task</Text>
+        <Text className="mx-4 mt-5 font-semibold text-xl text-slate-300">
+          Edit Task
+        </Text>
         <VoiceInputScreen />
 
-        <View className='mt-6'>
-          <Text className='text-xl font-bold text-slate-100 px-4 mb-4 tracking-tight'>Upcoming Schedule</Text>
-          <FlatList
-            data={data}
-            renderItem={renderDayColumn}
-            keyExtractor={(item) => item.id}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            snapToInterval={CARD_WIDTH + 16}
-            decelerationRate="fast"
-            contentContainerStyle={{ paddingHorizontal: 8 }}
-            scrollEventThrottle={16}
-          />
+        <View className="mt-6">
+          <Text className="text-xl font-bold text-slate-100 px-4 mb-4 tracking-tight">
+            Upcoming Schedule
+          </Text>
+          
+            <FlatList
+              data={data}
+              renderItem={renderDayColumn}
+              keyExtractor={(item) => item.id}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              snapToInterval={CARD_WIDTH + 16}
+              decelerationRate="fast"
+              contentContainerStyle={{ paddingHorizontal: 8 }}
+              scrollEventThrottle={16}
+            />
+          
         </View>
       </ScrollView>
 
@@ -212,54 +315,62 @@ export default function Insights() {
         animationType="slide"
         onRequestClose={() => setModalVisible(false)}
       >
-        <View className='flex-1 justify-end bg-black/60 mb-14'>
-          <KeyboardAvoidingView behavior='padding'>
-          <View className='bg-slate-900 border-t border-slate-700 p-6 rounded-t-3xl'>
-            <Text className='text-xl font-bold text-slate-100 mb-4'>Edit Task</Text>
+        <View className="flex-1 justify-end bg-black/60 mb-14">
+          <KeyboardAvoidingView behavior="padding">
+            <View className="bg-slate-900 border-t border-slate-700 p-6 rounded-t-3xl">
+              <Text className="text-xl font-bold text-slate-100 mb-4">
+                Edit Task
+              </Text>
 
-            <Text className='text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider'>Title</Text>
-            <TextInput
-              value={editTitle}
-              onChangeText={setEditTitle}
-              placeholder="Task title"
-              placeholderTextColor="#64748b"
-              className='bg-slate-800 text-slate-100 border border-slate-700 p-3.5 rounded-xl mb-4 text-base'
-            />
+              <Text className="text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">
+                Title
+              </Text>
+              <TextInput
+                value={editTitle}
+                onChangeText={setEditTitle}
+                placeholder="Task title"
+                placeholderTextColor="#64748b"
+                className="bg-slate-800 text-slate-100 border border-slate-700 p-3.5 rounded-xl mb-4 text-base"
+              />
 
-            <Text className='text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider'>Time</Text>
-            <TextInput
-              value={editTime}
-              onChangeText={setEditTime}
-              placeholder="12:10"
-              placeholderTextColor="#64748b"
-              className='bg-slate-800 text-slate-100 border border-slate-700 p-3.5 rounded-xl mb-4 text-base'
-            />
+              <Text className="text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">
+                Time
+              </Text>
+              <TextInput
+                value={editTime}
+                onChangeText={setEditTime}
+                placeholder="12:10"
+                placeholderTextColor="#64748b"
+                className="bg-slate-800 text-slate-100 border border-slate-700 p-3.5 rounded-xl mb-4 text-base"
+              />
 
-            <Text className='text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider'>Description</Text>
-            <TextInput
-              value={editDescription}
-              onChangeText={setEditDescription}
-              placeholder="Add description..."
-              placeholderTextColor="#64748b"
-              multiline
-              numberOfLines={3}
-              className='bg-slate-800 text-slate-100 border border-slate-700 p-3.5 rounded-xl mb-6 text-base h-24 textAlignVertical-top'
-            />
+              <Text className="text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">
+                Description
+              </Text>
+              <TextInput
+                value={editDescription}
+                onChangeText={setEditDescription}
+                placeholder="Add description..."
+                placeholderTextColor="#64748b"
+                multiline
+                numberOfLines={3}
+                className="bg-slate-800 text-slate-100 border border-slate-700 p-3.5 rounded-xl mb-6 text-base h-24 textAlignVertical-top"
+              />
 
-            <View className='flex-row space-x-3'>
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                className='flex-1 bg-slate-800 border border-slate-700 p-4 rounded-xl items-center'
-              >
-                <Text className='text-slate-300 font-semibold'>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleSaveTask}
-                className='flex-1 bg-blue-600 p-4 rounded-xl items-center'
-              >
-                <Text className='text-white font-semibold'>Save Changes</Text>
-              </TouchableOpacity>
-            </View>
+              <View className="flex-row space-x-3">
+                <TouchableOpacity
+                  onPress={() => setModalVisible(false)}
+                  className="flex-1 bg-slate-800 border border-slate-700 p-4 rounded-xl items-center"
+                >
+                  <Text className="text-slate-300 font-semibold">Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleSaveTask}
+                  className="flex-1 bg-blue-600 p-4 rounded-xl items-center"
+                >
+                  <Text className="text-white font-semibold">Save Changes</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </KeyboardAvoidingView>
         </View>
@@ -280,14 +391,14 @@ const acme = createChartPreset({
   light: {
     background: "#ffffff",
     grid: "#e5edf7",
-    series: ["#155eef", "#12b76a"]
+    series: ["#155eef", "#12b76a"],
   },
   dark: {
     background: "transparent",
     plotBackground: "transparent",
     grid: "#33415550",
-    series: ["#38bdf8", "#34d399"]
-  }
+    series: ["#38bdf8", "#34d399"],
+  },
 });
 
 const styles = StyleSheet.create({
@@ -306,5 +417,5 @@ const styles = StyleSheet.create({
     right: 0,
     height: 150,
     zIndex: 10,
-  }
+  },
 });
