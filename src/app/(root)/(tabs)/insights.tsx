@@ -19,6 +19,7 @@ import {
 } from "react-native-chart-kit/v2";
 import VoiceInputScreen from "@/helper/voiceInputProvider";
 import { LinearGradient } from "expo-linear-gradient";
+import { CreateIconSetFromIcoMoon, Ionicons } from "@expo/vector-icons";
 
 const screenWidth = Dimensions.get("window").width;
 const CARD_WIDTH = screenWidth - 64;
@@ -26,7 +27,8 @@ const CARD_WIDTH = screenWidth - 64;
 interface task {
   id: string;
   title: string;
-  time: string;
+  startTime: string;
+  endTime: string;
   description?: string;
 }
 
@@ -54,25 +56,29 @@ const INITIAL_DAYS_DATA: dayData[] = [
       {
         id: "t1",
         title: "Team Sync Meeting",
-        time: "12:10",
+        startTime: "12:10",
+        endTime: "12:15",
         description: "Discuss sprint progress and blockers.",
       },
       {
         id: "t2",
         title: "Review PR #204",
-        time: "12:15",
+        startTime: "12:15",
+        endTime: "12:20",
         description: "Check navigation state and component mounts.",
       },
       {
         id: "t3",
         title: "Design System Update",
-        time: "12:30",
+        startTime: "12:30",
+        endTime: "12:35",
         description: "Align colors with dark mode specs.",
       },
       {
         id: "t4",
         title: "Design Update",
-        time: "12:50",
+        startTime: "12:50",
+        endTime: "12:55",
         description: "Update wireframes for the settings screen.",
       },
     ],
@@ -84,13 +90,15 @@ const INITIAL_DAYS_DATA: dayData[] = [
       {
         id: "t4",
         title: "Client Presentation",
-        time: "12:10",
+        startTime: "12:10",
+        endTime: "12:15",
         description: "Walk through phase 1 deliverables.",
       },
       {
         id: "t5",
         title: "Database Optimization",
-        time: "12:10",
+        startTime: "12:10",
+        endTime: "12:15",
         description: "Index slow queries on user logs.",
       },
     ],
@@ -102,19 +110,22 @@ const INITIAL_DAYS_DATA: dayData[] = [
       {
         id: "t6",
         title: "Sprint Planning",
-        time: "12:10",
+        startTime: "12:10",
+        endTime: "12:15",
         description: "Prioritize backlog tickets for next cycle.",
       },
       {
         id: "t7",
         title: "Update Documentation",
-        time: "12:10",
+        startTime: "12:10",
+        endTime: "12:15",
         description: "Add notes on chart kit setup.",
       },
       {
         id: "t8",
         title: "User Testing",
-        time: "12:10",
+        startTime: "12:10",
+        endTime: "12:15",
         description: "Observe user flow interactions.",
       },
     ],
@@ -126,7 +137,8 @@ const INITIAL_DAYS_DATA: dayData[] = [
       {
         id: "t9",
         title: "Refactor Auth Flow",
-        time: "12:10",
+        startTime: "12:10",
+        endTime: "12:15",
         description: "Clean up token storage logic.",
       },
     ],
@@ -138,13 +150,15 @@ const INITIAL_DAYS_DATA: dayData[] = [
       {
         id: "t10",
         title: "Deploy to Staging",
-        time: "12:10",
+        startTime: "12:10",
+        endTime: "12:15",
         description: "Verify environment variables.",
       },
       {
         id: "t11",
         title: "Weekly Retrospective",
-        time: "12:10",
+        startTime: "12:10",
+        endTime: "12:15",
         description: "Review team feedback.",
       },
     ],
@@ -159,45 +173,89 @@ export default function Insights() {
   const [selectedTask, setSelectedTask] = useState<task | null>(null);
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
-  const [editTime, setEditTime] = useState("");
+  const [editStartTime, setEditStartTime] = useState("");
+  const [editEndTime, setEditEndTime] = useState("");
   const [editDescription, setEditDescription] = useState("");
 
   const handleOpenEdit = (dayId: string, taskItem: task) => {
     setSelectedDayId(dayId);
     setSelectedTask(taskItem);
     setEditTitle(taskItem.title);
-    setEditTime(taskItem.time);
+    setEditStartTime(taskItem.startTime);
+    setEditEndTime(taskItem.endTime);
     setEditDescription(taskItem.description || "");
     setModalVisible(true);
   };
 
-  const handleSaveTask = () => {
-    if (!selectedTask || !selectedDayId) return;
+  const handleAddTask = (dayId : string) => {
+    // if (!selectedDayId) return;
 
+    const newTask: task = {
+      id: Date.now().toString(),
+      title: "",
+      startTime: "",
+      endTime: "",
+      description: "",
+    };
+    setSelectedDayId(dayId);
+    setSelectedTask(newTask);
+    setEditTitle(newTask.title);
+    setEditStartTime(newTask.startTime);
+    setEditEndTime(newTask.endTime);
+    setEditDescription(newTask.description || "");
+    setModalVisible(true);
+  };
+
+  const handleDeleteTask = () => {
+    if (!selectedTask || !selectedDayId) return;
+  
     setData((prevData) =>
       prevData.map((day) => {
         if (day.id === selectedDayId) {
           return {
             ...day,
-            tasks: day.tasks.map((t) =>
-              t.id === selectedTask.id
-                ? {
-                    ...t,
-                    title: editTitle,
-                    time: editTime,
-                    description: editDescription,
-                  }
-                : t,
-            ),
+            tasks: day.tasks.filter((t) => t.id !== selectedTask.id),
           };
         }
         return day;
-      }),
+      })
     );
-
+  
     setModalVisible(false);
   };
 
+  
+
+  const handleSaveTask = () => {
+    if (!selectedTask || !selectedDayId) return;
+  
+    const updatedTask: task = {
+      ...selectedTask,
+      title: editTitle,
+      startTime: editStartTime,
+      endTime: editEndTime,
+      description: editDescription,
+    };
+  
+    setData((prevData) =>
+      prevData.map((day) => {
+        if (day.id === selectedDayId) {
+          const exists = day.tasks.some((t) => t.id === selectedTask.id);
+          return {
+            ...day,
+            tasks: exists
+              ? day.tasks.map((t) => (t.id === selectedTask.id ? updatedTask : t))
+              : [...day.tasks, updatedTask],
+          };
+        }
+        return day;
+      })
+    );
+  
+    setModalVisible(false);
+  };
+
+  
   const renderDayColumn = ({ item: dayItem }: { item: dayData }) => (
     <View
       style={{ width: CARD_WIDTH }}
@@ -207,10 +265,15 @@ export default function Insights() {
         <Text className="text-lg font-semibold text-slate-100 tracking-wide">
           {dayItem.date}
         </Text>
-        <View className="bg-black/20 px-2.5 py-1 rounded-full border border-blue-500/20">
+        <View className="flex-row items-center gap-x-3">
+          <TouchableOpacity onPress={() => handleAddTask(dayItem.id)}>
+            <Ionicons name="add-circle" size={16} color="gray" className="mr-1" />
+          </TouchableOpacity>
+          <View className="bg-black/20 px-2.5 py-1 rounded-full border border-blue-500/20">
           <Text className="text-xs font-medium text-gray-300">
             {dayItem.tasks.length} tasks
           </Text>
+        </View>
         </View>
       </View>
 
@@ -237,7 +300,7 @@ export default function Insights() {
             </View>
             <View className="bg-slate-700/50 px-2 py-0.5 rounded">
               <Text className="text-slate-400 text-xs font-mono">
-                {task.time}
+                {task.startTime} - {task.endTime}
               </Text>
             </View>
           </TouchableOpacity>
@@ -317,10 +380,17 @@ export default function Insights() {
       >
         <View className="flex-1 justify-end bg-black/60 mb-14">
           <KeyboardAvoidingView behavior="padding">
-            <View className="bg-slate-900 border-t border-slate-700 p-6 rounded-t-3xl">
-              <Text className="text-xl font-bold text-slate-100 mb-4">
-                Edit Task
-              </Text>
+            <View className="bg-slate-950 rounded-t-3xl p-6">
+              <View className="flex-row justify-between items-center">
+                <Text className="text-xl font-bold text-slate-200 mb-4">
+                  {data.some((d) => d.tasks.some((t) => t.id === selectedTask?.id))
+                    ? "Edit Task"
+                    : "Add Task"}
+                </Text>
+                <TouchableOpacity onPress={handleDeleteTask}>
+                  <Ionicons name="trash-outline" size={24} color="#64748b" />
+                </TouchableOpacity>
+              </View>
 
               <Text className="text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">
                 Title
@@ -330,18 +400,25 @@ export default function Insights() {
                 onChangeText={setEditTitle}
                 placeholder="Task title"
                 placeholderTextColor="#64748b"
-                className="bg-slate-800 text-slate-100 border border-slate-700 p-3.5 rounded-xl mb-4 text-base"
+                className="bg-slate-900 text-slate-100 border p-3.5 rounded-xl mb-4 text-base"
               />
 
               <Text className="text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">
                 Time
               </Text>
               <TextInput
-                value={editTime}
-                onChangeText={setEditTime}
+                value={editStartTime}
+                onChangeText={setEditStartTime}
                 placeholder="12:10"
                 placeholderTextColor="#64748b"
-                className="bg-slate-800 text-slate-100 border border-slate-700 p-3.5 rounded-xl mb-4 text-base"
+                className="bg-slate-900 text-slate-100 border p-3.5 rounded-xl mb-4 text-base"
+              />
+              <TextInput
+                value={editEndTime}
+                onChangeText={setEditEndTime}
+                placeholder="12:10"
+                placeholderTextColor="#64748b"
+                className="bg-slate-900 text-slate-100 border p-3.5 rounded-xl mb-4 text-base"
               />
 
               <Text className="text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">
@@ -354,19 +431,19 @@ export default function Insights() {
                 placeholderTextColor="#64748b"
                 multiline
                 numberOfLines={3}
-                className="bg-slate-800 text-slate-100 border border-slate-700 p-3.5 rounded-xl mb-6 text-base h-24 textAlignVertical-top"
+                className="bg-slate-900 text-slate-100 border p-3.5 rounded-xl mb-6 text-base h-24 textAlignVertical-top"
               />
 
               <View className="flex-row space-x-3">
                 <TouchableOpacity
                   onPress={() => setModalVisible(false)}
-                  className="flex-1 bg-slate-800 border border-slate-700 p-4 rounded-xl items-center"
+                  className="flex-1 bg-slate-800 border border-slate-700 p-4 rounded-xl items-center mx-2"
                 >
                   <Text className="text-slate-300 font-semibold">Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleSaveTask}
-                  className="flex-1 bg-blue-600 p-4 rounded-xl items-center"
+                  className="flex-1 bg-blue-600 p-4 rounded-xl items-center mx-2"
                 >
                   <Text className="text-white font-semibold">Save Changes</Text>
                 </TouchableOpacity>
