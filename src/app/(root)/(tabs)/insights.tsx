@@ -306,7 +306,7 @@ export default function Insights() {
   const [pickerMode, setPickerMode] = useState<"start" | "end" | null>(null);
 
   const isEditingExisting = data.some((d) =>
-    d.tasks.some((t) => t.id === selectedTask?.id),
+    d?.tasks?.some((t) => t.id === selectedTask?.id),
   );
 
   const handleOpenEdit = (dayId: string, taskItem: task) => {
@@ -362,14 +362,14 @@ export default function Insights() {
   };
 
   const handleDeleteTask = () => {
-    if (!selectedTask || !selectedDayId) return;
+    if (!selectedTask || !selectedDayId ) return;
 
     setData((prevData) =>
       prevData.map((day) => {
         if (day.id === selectedDayId) {
           return {
             ...day,
-            tasks: day.tasks.filter((t) => t.id !== selectedTask.id),
+            tasks: day?.tasks?.filter((t) => t.id !== selectedTask.id),
           };
         }
         return day;
@@ -393,14 +393,15 @@ export default function Insights() {
     setData((prevData) =>
       prevData.map((day) => {
         if (day.id === selectedDayId) {
-          const exists = day.tasks.some((t) => t.id === selectedTask.id);
+          const currentTasks = day.tasks ?? [];
+          const exists = currentTasks.some((t) => t.id === selectedTask.id);
           return {
             ...day,
             tasks: exists
-              ? day.tasks.map((t) =>
+              ? currentTasks.map((t) =>
                   t.id === selectedTask.id ? updatedTask : t,
                 )
-              : [...day.tasks, updatedTask],
+              : [...currentTasks, updatedTask],
           };
         }
         return day;
@@ -441,7 +442,7 @@ export default function Insights() {
         nestedScrollEnabled={true}
         className="max-h-64"
       >
-        {dayItem.tasks && (
+        {dayItem.tasks &&
           dayItem.tasks.map((task) => (
             <TouchableOpacity
               key={task.id}
@@ -457,7 +458,10 @@ export default function Insights() {
                   {task.title || "Untitled Task"}
                 </Text>
                 {task.description ? (
-                  <Text className="text-slate-400 text-xs mt-1" numberOfLines={1}>
+                  <Text
+                    className="text-slate-400 text-xs mt-1"
+                    numberOfLines={1}
+                  >
                     {task.description}
                   </Text>
                 ) : null}
@@ -468,8 +472,7 @@ export default function Insights() {
                 </Text>
               </View>
             </TouchableOpacity>
-          ))
-        )}
+          ))}
       </ScrollView>
     </View>
   );
