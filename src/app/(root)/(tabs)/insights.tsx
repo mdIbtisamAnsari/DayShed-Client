@@ -167,25 +167,26 @@ const INITIAL_DAYS_DATA: dayData[] = [
 
 interface CustomTimePickerProps {
   visible: boolean;
-  initialTime?: string;
+  initialValue?: string;
+  mode: "time" | "date";
   onClose: () => void;
-  onConfirm: (time: string) => void;
+  onConfirm: (val: string) => void;
 }
 
 function TimePicker({
   visible,
-  initialTime = "12:00",
+  initialValue = "12:00",
+  mode,
   onClose,
   onConfirm,
 }: CustomTimePickerProps) {
-  const parts = (initialTime || "12:00").split(":");
-  const [selectedHour, setSelectedHour] = useState(parts[0] || "12");
-  const [selectedMinute, setSelectedMinute] = useState(parts[1] || "00");
+  const isTime = mode === "time";
 
-  const hours = Array.from({ length: 24 }, (_, i) =>
+  // Switch arrays based on mode
+  const HOURS_BASE = Array.from({ length: 24 }, (_, i) =>
     i.toString().padStart(2, "0"),
   );
-  const minutes = [
+  const MINUTES_BASE = [
     "00",
     "05",
     "10",
@@ -199,9 +200,40 @@ function TimePicker({
     "50",
     "55",
   ];
+  const MONTHS_BASE = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const DAYS_BASE = Array.from({ length: 31 }, (_, i) =>
+    (i + 1).toString().padStart(2, "0"),
+  );
+
+  const leftList = isTime ? HOURS_BASE : MONTHS_BASE;
+  const rightList = isTime ? MINUTES_BASE : DAYS_BASE;
+
+  // Initialize selected values based on initialValue string
+  const defaultLeft = isTime ? "12" : "Oct";
+  const defaultRight = isTime ? "00" : "12";
+
+  const parts = (initialValue || "").split(isTime ? ":" : " ");
+  const [selectedLeft, setSelectedLeft] = useState(parts[0] || defaultLeft);
+  const [selectedRight, setSelectedRight] = useState(parts[1] || defaultRight);
 
   const handleConfirm = () => {
-    onConfirm(`${selectedHour}:${selectedMinute}`);
+    const formattedResult = isTime
+      ? `${selectedLeft}:${selectedRight}`
+      : `${selectedLeft} ${selectedRight}`;
+    onConfirm(formattedResult);
     onClose();
   };
 
@@ -214,29 +246,31 @@ function TimePicker({
     >
       <View className="flex-1 justify-center items-center bg-black/70 px-6">
         <View className="bg-slate-900 border border-slate-800 rounded-2xl p-5 w-full max-w-xs">
+          {/* Dynamic Header Title */}
           <Text className="text-slate-200 text-lg font-bold mb-4 text-center">
-            Select Time
+            {isTime ? "Select Time" : "Select Date"}
           </Text>
 
           <View className="flex-row justify-center items-center h-48 mb-4">
+            {/* Left Column: HOUR or MONTH */}
             <View className="flex-1 items-center">
-              <Text className="text-slate-400 text-xs font-semibold mb-2">
-                HOUR
+              <Text className="text-slate-400 text-xs font-semibold mb-2 uppercase">
+                {isTime ? "HOUR" : "MONTH"}
               </Text>
               <ScrollView
                 className="w-full"
                 showsVerticalScrollIndicator={false}
               >
-                {hours.map((h) => (
+                {leftList.map((item) => (
                   <TouchableOpacity
-                    key={h}
-                    onPress={() => setSelectedHour(h)}
+                    key={item}
+                    onPress={() => setSelectedLeft(item)}
                     className={`py-2 my-0.5 rounded-lg items-center ${
-                      selectedHour === h ? "bg-blue-600" : "bg-transparent"
+                      selectedLeft === item ? "bg-blue-600" : "bg-transparent"
                     }`}
                   >
                     <Text className="text-slate-100 font-mono text-base">
-                      {h}
+                      {item}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -244,27 +278,28 @@ function TimePicker({
             </View>
 
             <Text className="text-slate-400 text-xl font-bold px-2 self-center pt-4">
-              :
+              {isTime ? ":" : " "}
             </Text>
 
+            {/* Right Column: MINUTE or DAY */}
             <View className="flex-1 items-center">
-              <Text className="text-slate-400 text-xs font-semibold mb-2">
-                MINUTE
+              <Text className="text-slate-400 text-xs font-semibold mb-2 uppercase">
+                {isTime ? "MINUTE" : "DAY"}
               </Text>
               <ScrollView
                 className="w-full"
                 showsVerticalScrollIndicator={false}
               >
-                {minutes.map((m) => (
+                {rightList.map((item) => (
                   <TouchableOpacity
-                    key={m}
-                    onPress={() => setSelectedMinute(m)}
+                    key={item}
+                    onPress={() => setSelectedRight(item)}
                     className={`py-2 my-0.5 rounded-lg items-center ${
-                      selectedMinute === m ? "bg-blue-600" : "bg-transparent"
+                      selectedRight === item ? "bg-blue-600" : "bg-transparent"
                     }`}
                   >
                     <Text className="text-slate-100 font-mono text-base">
-                      {m}
+                      {item}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -302,12 +337,37 @@ export default function Insights() {
   const [editStartTime, setEditStartTime] = useState("12:00");
   const [editEndTime, setEditEndTime] = useState("12:30");
   const [editDescription, setEditDescription] = useState("");
+  const [addDayModalVisible, setAddDayModalVisible] = useState(false);
+  const [newDayDate, setNewDayDate] = useState("Oct 17");
+  const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
+  
 
-  const [pickerMode, setPickerMode] = useState<"start" | "end" | null>(null);
+  const [pickerMode, setPickerMode] = useState<"start" | "end" | "date" | null>(
+    null,
+  );
 
   const isEditingExisting = data.some((d) =>
     d?.tasks?.some((t) => t.id === selectedTask?.id),
   );
+
+  const handlePickerConfirm = (selectedVal: string) => {
+    if (pickerMode === "date") {
+      setNewDayDate(selectedVal);
+    }
+    setPickerMode(null);
+  };
+
+  // Handler triggered on "Add Day" button press
+  const handleAddNewDay = () => {
+    const newDay: dayData = {
+      id: Date.now().toString(),
+      date: newDayDate,
+      tasks: [],
+    };
+
+    setData((prev) => [...prev, newDay]);
+    setAddDayModalVisible(false);
+  };
 
   const handleOpenEdit = (dayId: string, taskItem: task) => {
     setSelectedDayId(dayId);
@@ -337,32 +397,8 @@ export default function Insights() {
     setModalVisible(true);
   };
 
-  const handleTimeSelected = (selectedTime: string) => {
-    if (pickerMode === "start") {
-      setEditStartTime(selectedTime);
-
-      // Auto adjust end time if end time is before start time
-      const [sH, sM] = selectedTime.split(":").map(Number);
-      const [eH, eM] = editEndTime.split(":").map(Number);
-      const startMins = sH * 60 + sM;
-      const endMins = eH * 60 + eM;
-
-      if (startMins >= endMins) {
-        const newEndMins = (startMins + 30) % 1440;
-        const newEH = Math.floor(newEndMins / 60)
-          .toString()
-          .padStart(2, "0");
-        const newEM = (newEndMins % 60).toString().padStart(2, "0");
-        setEditEndTime(`${newEH}:${newEM}`);
-      }
-    } else if (pickerMode === "end") {
-      setEditEndTime(selectedTime);
-    }
-    setPickerMode(null);
-  };
-
   const handleDeleteTask = () => {
-    if (!selectedTask || !selectedDayId ) return;
+    if (!selectedTask || !selectedDayId) return;
 
     setData((prevData) =>
       prevData.map((day) => {
@@ -409,6 +445,11 @@ export default function Insights() {
     );
 
     setModalVisible(false);
+  };
+
+  const showConfirmationToDeleteDay = (dayId: string) => {
+    setSelectedDayId(dayId);
+    setConfirmationModalVisible(true);
   };
 
   const renderDayColumn = ({ item: dayItem }: { item: dayData }) => (
@@ -474,8 +515,23 @@ export default function Insights() {
             </TouchableOpacity>
           ))}
       </ScrollView>
+      <View className="items-end justify-end mt-2">
+        <TouchableOpacity onPress={() => showConfirmationToDeleteDay(dayItem.id)}>
+          <Text className="text-red-500 font-semibold text-sm">Remove</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
+
+  const handleAddDay = () => {
+    setAddDayModalVisible(true);
+  };
+
+  const handleDeleteDay = () => {
+    if (!selectedDayId) return;
+    setData(data.filter((d) => d.id !== selectedDayId));
+    setConfirmationModalVisible(false);
+  };
 
   return (
     <SafeAreaView className="flex-1">
@@ -514,7 +570,7 @@ export default function Insights() {
         </View>
 
         <Text className="mx-4 mt-5 font-semibold text-xl text-slate-300">
-          Voice Action
+          Edit Using AI
         </Text>
         <VoiceInputScreen />
 
@@ -523,7 +579,10 @@ export default function Insights() {
             <Text className="text-xl font-bold text-slate-100 px-4 mb-4 tracking-tight">
               Upcoming Schedule
             </Text>
-            <TouchableOpacity className="flex -translate-y-3">
+            <TouchableOpacity
+              className="flex -translate-y-3"
+              onPress={() => handleAddDay()}
+            >
               <Ionicons name="add-circle" size={26} color="#ef4444" />
             </TouchableOpacity>
           </View>
@@ -637,11 +696,101 @@ export default function Insights() {
         </View>
       </Modal>
 
+      {/* Add Day Modal */}
+      <Modal
+        visible={addDayModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setAddDayModalVisible(false)}
+      >
+        <View className="flex-1 justify-end bg-black/60 mb-14">
+          <KeyboardAvoidingView behavior="padding">
+            <View className="bg-slate-950 rounded-t-3xl p-6">
+              <View className="flex-row items-center justify-between mb-4 z-20">
+                <Text className="text-xl font-bold text-slate-200">
+                  Add Custom Day Schedule
+                </Text>
+              </View>
+
+              <Text className="text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">
+                Date
+              </Text>
+              <View className="flex-row space-x-2 mb-6">
+                <TouchableOpacity
+                  onPress={() => setPickerMode("date")}
+                  className="flex-1 bg-slate-900 border border-slate-800 p-3.5 rounded-xl flex-row items-center justify-between"
+                >
+                  <Text className="text-slate-100 text-base font-mono">
+                    {newDayDate}
+                  </Text>
+                  <Ionicons name="calendar-outline" size={18} color="#94a3b8" />
+                </TouchableOpacity>
+              </View>
+
+              <View className="flex-row space-x-3">
+                <TouchableOpacity
+                  onPress={() => setAddDayModalVisible(false)}
+                  className="flex-1 bg-slate-800 border border-slate-700 p-4 rounded-xl items-center mx-1"
+                >
+                  <Text className="text-slate-300 font-semibold">Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleAddNewDay}
+                  className="flex-1 bg-blue-600 p-4 rounded-xl items-center mx-1"
+                >
+                  <Text className="text-white font-semibold">Add Day</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      </Modal>
+
+      {/* Delete Day Confirmation Modal */}
+      <Modal
+        visible={confirmationModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setConfirmationModalVisible(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black/70 px-6">
+          <View className="bg-slate-900 border p-6 rounded-2xl w-full max-w-xs">
+            <Text className="text-slate-200 text-lg font-bold mb-2 text-center">
+              Delete Schedule
+            </Text>
+            <Text className="text-slate-400 text-sm text-center mb-6">
+              Are you sure you want to delete this entire day?
+            </Text>
+            <View className="flex-row space-x-3">
+              <TouchableOpacity
+                onPress={() => setConfirmationModalVisible(false)}
+                className="flex-1 bg-slate-800 border border-slate-700 p-3.5 rounded-xl items-center mx-1"
+              >
+                <Text className="text-slate-300 font-semibold">Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleDeleteDay}
+                className="flex-1 bg-slate-600 p-3.5 rounded-xl items-center mx-1"
+              >
+                <Text className="text-white font-semibold">Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <TimePicker
         visible={pickerMode !== null}
-        initialTime={pickerMode === "start" ? editStartTime : editEndTime}
+        mode={pickerMode === "date" ? "date" : "time"}
+        initialValue={
+          pickerMode === "start"
+            ? editStartTime
+            : pickerMode === "end"
+              ? editEndTime
+              : newDayDate
+        }
         onClose={() => setPickerMode(null)}
-        onConfirm={handleTimeSelected}
+        onConfirm={handlePickerConfirm}
       />
 
       <LinearGradient
