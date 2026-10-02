@@ -340,7 +340,8 @@ export default function Insights() {
   const [addDayModalVisible, setAddDayModalVisible] = useState(false);
   const [newDayDate, setNewDayDate] = useState("Oct 17");
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
-  
+  const [defaultSchedule, setDefaultSchedule] = useState<task[]>([]);
+
 
   const [pickerMode, setPickerMode] = useState<"start" | "end" | "date" | null>(
     null,
@@ -452,6 +453,10 @@ export default function Insights() {
     setConfirmationModalVisible(true);
   };
 
+  const handleDefaulfSetting = (tasks: task[] | undefined) => {
+    setDefaultSchedule(tasks ?? []);
+  };
+
   const renderDayColumn = ({ item: dayItem }: { item: dayData }) => (
     <View
       style={{ width: CARD_WIDTH }}
@@ -515,9 +520,14 @@ export default function Insights() {
             </TouchableOpacity>
           ))}
       </ScrollView>
-      <View className="items-end justify-end mt-2">
-        <TouchableOpacity onPress={() => showConfirmationToDeleteDay(dayItem.id)}>
-          <Text className="text-red-500 font-semibold text-sm">Remove</Text>
+      <View className="flex-row justify-between mt-2">
+        <TouchableOpacity onPress={() => handleDefaulfSetting(dayItem.tasks)} className="border p-2 rounded-xl bg-black/30">
+          <Text className="font-semibold text-slate-200 text-sm">
+            Set As Default For EveryDay
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity className="border p-2 rounded-xl bg-black/30" onPress={() => showConfirmationToDeleteDay(dayItem.id)}>
+          <Text className="font-semibold text-red-500 text-sm">Remove</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -534,7 +544,7 @@ export default function Insights() {
   };
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1 bg-slate-800">
       <LinearGradient
         colors={["#1e293b", "transparent"]}
         start={{ x: 0, y: 0 }}
@@ -598,6 +608,55 @@ export default function Insights() {
             scrollEventThrottle={16}
           />
         </View>
+        {defaultSchedule.length > 0 && (
+        <View className="bg-black/40 w-[calc(100vw-16px)] mx-6 mt-3 p-3 rounded-xl">
+          <Text className="py-2 rounded-xl font-semibold text-xl">
+              <Text className="text-slate-200">
+                Default Schedule: {defaultSchedule.length} tasks
+              </Text>
+          </Text>
+
+            <View>
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                nestedScrollEnabled={true}
+                className="max-h-64 "
+              >
+                {defaultSchedule.length > 0 &&
+                  defaultSchedule.map((task) => (
+                    <TouchableOpacity
+                      key={task.id}
+                      activeOpacity={0.7}
+
+                      className="bg-slate-800/80 border border-slate-700/40 p-3.5 rounded-xl mb-2.5 flex-row items-center justify-between"
+                    >
+                      <View className="flex-1 mr-3">
+                        <Text
+                          className="text-slate-200 font-medium text-sm mb-0.5"
+                          numberOfLines={1}
+                        >
+                          {task.title || "Untitled Task"}
+                        </Text>
+                        {task.description ? (
+                          <Text
+                            className="text-slate-400 text-xs mt-1"
+                            numberOfLines={1}
+                          >
+                            {task.description}
+                          </Text>
+                        ) : null}
+                      </View>
+                      <View className="bg-slate-700/50 px-2 py-0.5 rounded">
+                        <Text className="text-slate-400 text-xs font-mono">
+                          {task.startTime} - {task.endTime}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+              </ScrollView>
+            </View>
+        </View>
+        )}
       </ScrollView>
 
       <Modal
