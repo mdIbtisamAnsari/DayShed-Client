@@ -15,7 +15,7 @@ export default function Index() {
   }
 
   if (!isSignedIn) {
-    return <Redirect href="/(root)/(tabs)/home" />;
+    return <Redirect href="/(root)/(subscription)/subscribe" />;
   }
 
   return <Redirect href="/(auth)/signin" />;
