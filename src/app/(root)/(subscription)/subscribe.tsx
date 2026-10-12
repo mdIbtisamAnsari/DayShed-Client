@@ -9,6 +9,7 @@ import {
   RoundedRect,
 } from "@shopify/react-native-skia";
 import RazorpayCheckout from "react-native-razorpay";
+import { API_BASE_URL } from "../../../../constants";
 
 export default function Subscribe() {
   const [monthlyAmount] = useState<number>(299);
@@ -17,7 +18,9 @@ export default function Subscribe() {
   const [annualOffer] = useState<string>("");
 
   const [xPositionOfGradient, setXPositionOfGradient] = useState<5 | 167>(5);
-  const [selectedPlan, setSelectedPlan] = useState<"Monthly" | "Annual">("Monthly");
+  const [selectedPlan, setSelectedPlan] = useState<"Monthly" | "Annual">(
+    "Monthly",
+  );
 
   const setToMonthly = () => {
     setSelectedPlan("Monthly");
@@ -38,44 +41,65 @@ export default function Subscribe() {
     aiCredits: 10,
   };
 
+  const [loading, setLoading] = useState<boolean>(false);
+  
   const handleSubscriptionPayment = async () => {
+    if (loading) return;
+    setLoading(true);
+  
     const amountInPaise = selectedPlan === "Monthly" ? monthlyAmount * 100 : annualAmount * 100;
-
+  
     try {
-     
-      // const orderResponse = await fetch('https://your-backend.com/create-order', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ plan: selectedPlan, amount: amountInPaise })
-      // });
-      // const orderData = await orderResponse.json();
-
+      const orderResponse = await fetch(`${API_BASE_URL}/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: selectedPlan, amount: amountInPaise })
+      });
+      
+      const orderData = await orderResponse.json();
+  
+      if (!orderData.success || !orderData.order) {
+        throw new Error(orderData.message || "Failed to fetch order from server");
+      }
+  
       const options = {
         description: `DayShed Pro ${selectedPlan} Subscription`,
-        image: 'https://your-logo-url.com/logo.png', // Optional: Your app logo URL
         currency: 'INR',
-        key: process.env.RAZORPAY_KEY, // Replace with your Razorpay Test/Live Key ID
-        amount: amountInPaise, 
-        order_id: "orderData.id", // Uncomment this once you generate orders from your backend server
+        key: process.env.EXPO_PUBLIC_RAZORPAY_KEY,
+        amount: orderData.order.amount,
+        order_id: orderData.order.id,
         name: 'DayShed',
         prefill: {
           email: 'user@example.com',
           contact: '9999999999',
-          name: 'DayShed User',
+          name: 'DayShed User'
         },
-        theme: { color: '#06b6d4' }, // Cyan color matching your UI
+        theme: { color: '#06b6d4' }
       };
-
+  
+      if (!RazorpayCheckout || typeof RazorpayCheckout.open !== 'function') {
+        Alert.alert("Error", "Razorpay native module is not available. Make sure you are using a development build.");
+        setLoading(false);
+        return;
+      }
+  
+      // Open Razorpay Checkout
       RazorpayCheckout.open(options)
-        .then((data: { razorpay_payment_id: string }) => {
-          Alert.alert("Success", `Payment Success!\nPayment ID: ${data.razorpay_payment_id}`);
+        .then((data) => {
+          setLoading(false);
+          Alert.alert(`Success`, `Payment ID: ${data.razorpay_payment_id}`);
+          router.replace('/(root)/(tabs)/home')
+          // TODO: Call your backend to verify payment & activate subscription
         })
-        .catch((error: { code: number; description: string }) => {
-          Alert.alert(`Error`, `Code: ${error.code}\nDescription: ${error.description}`);
+        .catch((error) => {
+          setLoading(false);
+          Alert.alert(`Payment Cancelled/Failed`, `${error.code} | ${error.description}`);
         });
 
-    } catch (error) {
-      Alert.alert("Error", "Something went wrong while initiating payment.");
+  
+    } catch (error: any) {
+      setLoading(false);
+      Alert.alert("Error", error.message || "Something went wrong while initiating payment.");
       console.error(error);
     }
   };
@@ -151,8 +175,16 @@ export default function Subscribe() {
           className="items-center gap-x-2 bg-black flex-1 rounded-2xl h-32 justify-around z-5"
         >
           <Text className="text-slate-200">Monthly</Text>
-          <Text className="text-slate-400 text-xl">{monthlyAmount}Rs/month</Text>
-          <Text className={monthlyOffer.length !== 0 ? "bg-cyan-500 py-1 px-2 rounded-full" : ""}>
+          <Text className="text-slate-400 text-xl">
+            {monthlyAmount}Rs/month
+          </Text>
+          <Text
+            className={
+              monthlyOffer.length !== 0
+                ? "bg-cyan-500 py-1 px-2 rounded-full"
+                : ""
+            }
+          >
             {monthlyOffer}
           </Text>
         </TouchableOpacity>
@@ -163,7 +195,13 @@ export default function Subscribe() {
         >
           <Text className="text-slate-200">Annual</Text>
           <Text className="text-slate-400 text-xl">{annualAmount}Rs/month</Text>
-          <Text className={annualOffer.length !== 0 ? "bg-cyan-500 py-1 px-2 rounded-full" : ""}>
+          <Text
+            className={
+              annualOffer.length !== 0
+                ? "bg-cyan-500 py-1 px-2 rounded-full"
+                : ""
+            }
+          >
             {annualOffer}
           </Text>
         </TouchableOpacity>
@@ -177,12 +215,13 @@ export default function Subscribe() {
 
       <View className="mt-5 flex-1 items-center justify-end">
         {/* Connected Razorpay Trigger */}
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={handleSubscriptionPayment}
-          className="bg-cyan-400 w-full py-4 rounded-full"
+          disabled={loading}
+          className={`bg-cyan-400 w-full py-4 rounded-full ${loading ? 'opacity-50' : ''}`}
         >
           <Text className="text-slate-900 font-semibold text-center">
-            Subscribe To {selectedPlan} Plan
+            {loading ? "Processing..." : `Subscribe To ${selectedPlan} Plan`}
           </Text>
         </TouchableOpacity>
       </View>
