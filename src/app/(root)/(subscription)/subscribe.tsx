@@ -41,7 +41,7 @@ export default function Subscribe() {
   };
 
   const user = {
-    isSubscribed: true,
+    isSubscribed: false,
     aiCredits: 10,
     currentPlan: "Annual",
     subscribedOn: "2025-10-10",
