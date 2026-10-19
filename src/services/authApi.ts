@@ -1,9 +1,6 @@
-import { apiClient } from '../api/client';import { API_BASE_URL } from "../../constants";
-
+import { apiClient } from '../api/client';
+import { API_BASE_URL } from "../../constants";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-
-
-
 
 export const getUser = async (accessToken: string) => {
     try {
