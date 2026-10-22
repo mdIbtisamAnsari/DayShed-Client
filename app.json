@@ -14,10 +14,10 @@
     },
     "ios": {
       "icon": "./assets/icon.png",
-      "bundleIdentifier": "com.dayshed.sheduler"
+      "bundleIdentifier": "com.dayshed.scheduler"
     },
     "android": {
-      "package": "com.dayshed.sheduler",
+      "package": "com.dayshed.scheduler",
       "softwareKeyboardLayoutMode": "pan",
       "predictiveBackGestureEnabled": false
     },

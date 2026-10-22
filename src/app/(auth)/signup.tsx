@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { getOtp, handleGoogleSignIn } from "../../services/authApi";
+import { getOtp, handleGoogleSignIn, checkRegistration } from "../../services/authApi";
 import { AntDesign } from "@expo/vector-icons";
 
 export default function signup() {
@@ -53,7 +53,9 @@ export default function signup() {
       setError("All fields are required");
       return;
     }
+    
     try {
+      await checkRegistration(email);
       await getOtp(email).then(() => {
         router.replace({
           pathname: "/(auth)/otp",
@@ -201,7 +203,17 @@ export default function signup() {
             <Text className="mx-4 text-slate-400 text-md font-medium">or</Text>
             <View className="flex-1 h-[1px] bg-slate-500/40" />
           </View>
-          <TouchableOpacity className="bg-[#434D56] py-3 px-3 rounded-full flex-row items-center mt-2" onPress={handleGoogleSignIn}>
+          <TouchableOpacity className="bg-[#434D56] py-3 px-3 rounded-full flex-row items-center mt-2" onPress={async () => {
+              try {
+                setError("");
+                const data = await handleGoogleSignIn();
+                if (data) {
+                  router.replace("/(root)/(tabs)/home");
+                }
+              } catch (err) {
+                setError("Google Sign-In failed. Please try again.");
+              }
+            }}>
             <AntDesign name="google" size={20} color="#E5E7EB" />
             <Text className="text-gray-100 flex-1 text-center -translate-x-4 text-lg">Continue with Google</Text>
           </TouchableOpacity>

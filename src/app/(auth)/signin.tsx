@@ -1,13 +1,9 @@
 import {
   View,
   Text,
-  Image,
   TextInput,
   KeyboardAvoidingView,
-  Platform,
   Pressable,
-  Button,
-  Alert,
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
@@ -54,11 +50,8 @@ export default function signin() {
     }
   };
 
-  useEffect(() => {
-    GoogleSignin.configure({
-      webClientId: process.env.WEB_CLIENT_ID,
-    });
-  }, []);
+
+  
 
   return (
     <KeyboardAvoidingView className="flex-1" behavior="padding">
@@ -146,7 +139,17 @@ export default function signin() {
 
         <TouchableOpacity
           className="bg-[#434D56] py-3 px-3 rounded-full flex-row items-center mt-5"
-          onPress={handleGoogleSignIn}
+          onPress={async () => {
+              try {
+                setError("");
+                const data = await handleGoogleSignIn();
+                if (data) {
+                  router.replace("/(root)/(tabs)/home");
+                }
+              } catch (err) {
+                setError("Google Sign-In failed. Please try again.");
+              }
+            }}
         >
           <AntDesign name="google" size={20} color="#E5E7EB" />
           <Text className="text-gray-100 flex-1 text-center -translate-x-4 text-lg">
